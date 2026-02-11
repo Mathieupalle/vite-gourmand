@@ -12,7 +12,6 @@ Le développement est réalisé sur un poste personnel à l’aide d’un serveu
 
 L’éditeur de code utilisé est Visual Studio Code, choisi pour sa légèreté, sa simplicité d’utilisation et la disponibilité de nombreuses extensions utiles au développement web.
 
-Le projet est versionné à l’aide de Git, ce qui permet de conserver un historique des modifications et de sécuriser l’avancement du développement. 
 Le dépôt est hébergé sur GitHub pour centraliser le code, le sauvegarder en ligne et faciliter le partage du projet.
 
 Ce fichier README.md a été rédigé pour documenter l’environnement de travail, les prérequis et les étapes nécessaires pour installer et lancer le projet en local, conformément aux bonnes pratiques de développement.
@@ -45,7 +44,6 @@ Ce fichier README.md a été rédigé pour documenter l’environnement de trava
 
 ## Outils de développement
 - Visual Studio Code
-- Git
 - GitHub
 
 ---
