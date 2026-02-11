@@ -32,7 +32,10 @@ Le projet repose sur une architecture client-serveur séparant le front-end (int
 ---
 
 ## Environnement de travail et justification des choix
-Le développement est réalisé sur un poste personnel à l’aide d’un serveur local de type XAMPP. Ce choix permet de disposer facilement d’un environnement complet regroupant Apache, PHP et MySQL, sans configuration complexe. L’utilisation d’un serveur local facilite les tests de l’application avant son déploiement en ligne.
+Le développement est réalisé en environnement local (XAMPP), tandis que le déploiement en production est effectué sur une plateforme cloud afin de séparer clairement les phases de développement et de mise en ligne.
+
+Ce choix permet de disposer facilement d’un environnement complet regroupant Apache, PHP et MySQL, sans configuration complexe. 
+L’utilisation d’un serveur local facilite les tests de l’application avant son déploiement en ligne.
 
 L’éditeur de code utilisé est Visual Studio Code, choisi pour sa légèreté, sa simplicité d’utilisation et la disponibilité de nombreuses extensions utiles au développement web.
 
@@ -43,11 +46,8 @@ Ce fichier README.md a été rédigé pour documenter l’environnement de trava
 ---
 
 ## Gestion de version
-
 Le projet est versionné avec Git et hébergé sur GitHub.
-
 La gestion de version est réalisée via le terminal macOS (Bash), permettant d’exécuter les commandes Git telles que `git init`, `git add`, `git commit`, `git pull` et `git push`.
-
 Cette gestion permet de suivre les modifications du projet, d’assurer une sauvegarde en ligne et de respecter les bonnes pratiques de développement.
 
 ---
@@ -60,17 +60,17 @@ Cette gestion permet de suivre les modifications du projet, d’assurer une sauv
 
 ---
 
-## Installation
+## Installation en local
 1. Télécharger le dépôt GitHub
 2. Placer le dossier du projet dans le dossier `htdocs` de XAMPP
-3. Lancer XAMPP et démarrer le serveur local (Apache) ainsi que la base de données (MySQL)
+3. Lancer XAMPP et démarrer Apache et MySQL
 4. Accéder au projet via l’adresse `http://localhost`
 
 ---
 
 ## Déploiement
-Le projet est destiné à être déployé sur une plateforme cloud de type Heroku ou Fly.io afin d’héberger l’application web complète (front-end et back-end).
-Le déploiement permettra de rendre l’application accessible en ligne et de se rapprocher des conditions réelles de mise en production.
+Le projet est déployé sur la plateforme cloud Heroku afin d’héberger l’application web complète.
+Le déploiement est réalisé via Git depuis le terminal, permettant d’envoyer le code vers l’environnement de production. Heroku exécute ensuite l’application sur un serveur distant accessible en ligne.
 
 ---
 
