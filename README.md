@@ -25,9 +25,10 @@ Le projet repose sur une architecture client-serveur séparant le front-end (int
 
 ## Outils de développement
 - Visual Studio Code : éditeur de code utilisé pour le développement
-- Git : gestion de version
+- Git : gestion de version via le Terminal (Bash) sur MacOS
 - GitHub : hébergement du code et suivi des versions
-- XAMPP : environnement serveur local pour les tests
+- XAMPP : environnement serveur local pour les tests en phase de développement
+- Heroku : plateforme cloud utilisée pour le déploiement et l’hébergement de l’application en production
 
 ---
 
