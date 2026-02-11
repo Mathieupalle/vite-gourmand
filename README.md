@@ -12,10 +12,24 @@ Le développement est réalisé sur un poste personnel à l’aide d’un serveu
 
 L’éditeur de code utilisé est Visual Studio Code, choisi pour sa légèreté, sa simplicité d’utilisation et la disponibilité de nombreuses extensions utiles au développement web.
 
-Le projet est mis à jour à l’aide de Git, ce qui permet de conserver un historique des modifications et de sécuriser l’avancement du développement. 
 Le dépôt est hébergé sur GitHub pour centraliser le code, le sauvegarder en ligne et faciliter le partage du projet.
 
 Ce fichier README.md a été rédigé pour documenter l’environnement de travail, les prérequis et les étapes nécessaires pour installer et lancer le projet en local, conformément aux bonnes pratiques de développement.
+
+---
+
+## Gestion de version
+
+Le projet est versionné avec Git et hébergé sur GitHub.
+
+Les étapes principales ont été :
+- Initialisation du dépôt local avec `git init`
+- Ajout des fichiers avec `git add`
+- Création d’un premier commit
+- Connexion au dépôt distant GitHub
+- Gestion des branches et synchronisation via `git pull` et `git push`
+
+Cette gestion permet de suivre les modifications du projet et d’assurer une sauvegarde en ligne.
 
 ---
 
