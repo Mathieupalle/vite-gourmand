@@ -43,16 +43,12 @@ Ce fichier README.md a été rédigé pour documenter l’environnement de trava
 ---
 
 ## Gestion de version
+
 Le projet est versionné avec Git et hébergé sur GitHub.
 
-Les étapes principales ont été :
-- Initialisation du dépôt local avec `git init`
-- Ajout des fichiers avec `git add`
-- Création d’un premier commit
-- Connexion au dépôt distant GitHub
-- Gestion des branches et synchronisation via `git pull` et `git push`
+La gestion de version est réalisée via le terminal macOS (Bash), permettant d’exécuter les commandes Git telles que `git init`, `git add`, `git commit`, `git pull` et `git push`.
 
-Cette gestion permet de suivre les modifications du projet et d’assurer une sauvegarde en ligne.
+Cette gestion permet de suivre les modifications du projet, d’assurer une sauvegarde en ligne et de respecter les bonnes pratiques de développement.
 
 ---
 
