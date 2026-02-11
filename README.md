@@ -32,7 +32,7 @@ Ou télécharger le dossier en format ZIP depuis GitHub.
 - Apache
 - MySQL
 
-4. Créer la base de données via phpMyAdmin
+4. Créer la base de données via phpMyAdmin (à venir)
    
 5. Accéder au projet via le navigateur :
 http://localhost/vite-gourmand
