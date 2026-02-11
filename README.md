@@ -28,6 +28,10 @@ Le projet repose sur une architecture client-serveur séparant le front-end (int
 - Git : gestion de version via le Terminal (Bash) sur MacOS
 - GitHub : hébergement du code et suivi des versions
 - XAMPP : environnement serveur local pour les tests en phase de développement
+
+---
+
+## Outils de déploiement
 - Heroku : plateforme cloud utilisée pour le déploiement et l’hébergement de l’application en production
 
 ---
