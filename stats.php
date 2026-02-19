@@ -19,12 +19,25 @@ if (!$isAdmin) {
 require_once __DIR__ . '/vendor/autoload.php';
 
 $mongoUri = getenv('MONGODB_URI');
+
+if (!$mongoUri && file_exists(__DIR__ . '/config.local.php')) {
+    $cfg = require __DIR__ . '/config.local.php';
+    $mongoUri = $cfg['MONGODB_URI'] ?? null;
+}
+
 if (!$mongoUri) {
     http_response_code(500);
     exit('MONGODB_URI manquant');
 }
 
-$client = new MongoDB\Client($mongoUri);
+$driverOpts = [];
+
+if (PHP_SAPI !== 'cli' && (($_SERVER['HTTP_HOST'] ?? '') === 'localhost')) {
+    $driverOpts['tlsCAFile'] = '/Applications/XAMPP/xamppfiles/etc/ssl/cacert.pem';
+}
+
+$client = new MongoDB\Client($mongoUri, [], $driverOpts);
+
 $col = $client->selectCollection('vitegourmand', 'orders_analytics');
 
 // Récupération des menus distincts (pour le filtre)

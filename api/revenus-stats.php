@@ -22,12 +22,19 @@ if (!$isAdmin) {
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$uri = getenv('MONGODB_URI');
-if (!$uri) {
-    http_response_code(500);
-    echo json_encode(['error' => 'MONGODB_URI manquant']);
-    exit;
+$mongoUri = getenv('MONGODB_URI');
+
+if (!$mongoUri && file_exists(__DIR__ . '/config.local.php')) {
+    $cfg = require __DIR__ . '/config.local.php';
+    $mongoUri = $cfg['MONGODB_URI'] ?? null;
 }
+
+if (!$mongoUri) {
+    http_response_code(500);
+    exit('MONGODB_URI manquant');
+}
+
+$client = new MongoDB\Client($mongoUri);
 
 function utcMs(string $ymd, string $time): int {
     $ts = strtotime($ymd . ' ' . $time);
@@ -173,7 +180,14 @@ try {
     $startUtc = new MongoDB\BSON\UTCDateTime(utcMs($start, '00:00:00'));
     $endUtc   = new MongoDB\BSON\UTCDateTime(utcMs($end,   '23:59:59'));
 
-    $client = new MongoDB\Client($uri);
+    $driverOpts = [];
+
+    if (PHP_SAPI !== 'cli' && (($_SERVER['HTTP_HOST'] ?? '') === 'localhost')) {
+        $driverOpts['tlsCAFile'] = '/Applications/XAMPP/xamppfiles/etc/ssl/cacert.pem';
+    }
+
+    $client = new MongoDB\Client($mongoUri, [], $driverOpts);
+
     $col = $client->selectCollection('vitegourmand', 'orders_analytics');
 
     $current = aggregatePeriod($col, $startUtc, $endUtc, $group, $menuId);

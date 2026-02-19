@@ -4,3 +4,4 @@ config.local.php
 .env
 vendor/
 .DS_Store
+vendor/
