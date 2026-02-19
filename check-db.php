@@ -1,12 +1,16 @@
 <?php
+declare(strict_types=1);
+
 $u = getenv('JAWSDB_URL');
 if (!$u) { fwrite(STDERR, "No JAWSDB_URL\n"); exit(1); }
 
 $p = parse_url($u);
-$host = $p['host'] ?? null;
-$user = $p['user'] ?? null;
-$pass = $p['pass'] ?? null;
-$db   = isset($p['path']) ? ltrim($p['path'], '/') : null;
+if ($p === false) { fwrite(STDERR, "Invalid JAWSDB_URL\n"); exit(1); }
+
+$host = $p['host'] ?? '';
+$user = $p['user'] ?? '';
+$pass = $p['pass'] ?? '';
+$db   = isset($p['path']) ? ltrim($p['path'], '/') : '';
 $port = $p['port'] ?? 3306;
 
 $dsn = "mysql:host={$host};port={$port};dbname={$db};charset=utf8mb4";
@@ -15,6 +19,8 @@ $pdo = new PDO($dsn, $user, $pass, [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 ]);
 
-echo "DB=" . $pdo->query("SELECT DATABASE()")->fetchColumn() . PHP_EOL;
-echo "Tables=" . $pdo->query("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE()")->fetchColumn() . PHP_EOL;
-PHP
+$dbName = $pdo->query("SELECT DATABASE()")->fetchColumn();
+$tableCount = $pdo->query("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE()")->fetchColumn();
+
+echo "DB={$dbName}\n";
+echo "Tables={$tableCount}\n";
