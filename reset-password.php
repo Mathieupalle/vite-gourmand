@@ -1,8 +1,6 @@
 <?php
 // reset-password.php : page de réinitialisation
-// - Vérifie le token + expiration
-// - Demande un nouveau mot de passe
-// - Met à jour utilisateur.password + supprime token
+// Vérifie le token + expiration, demande un nouveau mot de passe, et met à jour utilisateur.password + supprime token
 
 session_start();
 require_once __DIR__ . '/src/db.php';
@@ -11,7 +9,7 @@ $pdo = db();
 $errors = [];
 $success = null;
 
-// Vérif mot de passe (10 + maj/min/chiffre/spécial)
+// 1) Vérifier mot de passe (10 + maj/min/chiffre/spécial)
 function isStrongPassword(string $password): bool
 {
     if (strlen($password) < 10) return false;
@@ -28,7 +26,7 @@ if ($token === '') {
     die("Token manquant.");
 }
 
-// 1) Vérifier token + expiration
+// 2) Vérifier token + expiration
 $stmt = $pdo->prepare("
     SELECT utilisateur_id, reset_expires
     FROM utilisateur
@@ -62,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!$errors) {
-        // 2) Mettre à jour le mot de passe + supprimer le token
+        // 3) Mettre à jour le mot de passe + supprimer le token
         $upd = $pdo->prepare("
             UPDATE utilisateur
             SET password = ?, reset_token = NULL, reset_expires = NULL

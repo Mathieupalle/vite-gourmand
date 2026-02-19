@@ -59,7 +59,7 @@ if ($apply === 'statut') {
         $whereParts[] = "c.statut = ?";
         $params[] = $statutFiltre;
     }
-    // important : ignorer menu même si présent dans l'URL
+    // Ignorer menu même si présent dans l'URL
     $menuFiltre = 0;
 }
 
@@ -68,7 +68,7 @@ if ($apply === 'menu') {
         $whereParts[] = "c.menu_id = ?";
         $params[] = $menuFiltre;
     }
-    // important : ignorer statut même si présent dans l'URL
+    // Ignorer statut même si présent dans l'URL
     $statutFiltre = '';
 }
 

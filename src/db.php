@@ -17,9 +17,8 @@ function db(): PDO
     try {
 
         if ($jawsUrl) {
-            // =========================
+
             // PRODUCTION (Heroku + JawsDB)
-            // =========================
 
             $parts = parse_url($jawsUrl);
 
@@ -50,9 +49,8 @@ function db(): PDO
             $pdo = new PDO($dsn, $user, $pass, $opts);
 
         } else {
-            // =========================
+
             // LOCAL (XAMPP)
-            // =========================
 
             $dsn = "mysql:host=127.0.0.1;port=3306;dbname=vite_gourmand;charset=utf8mb4";
 
@@ -68,7 +66,7 @@ function db(): PDO
     } catch (Throwable $e) {
 
         if ($jawsUrl) {
-            // En production → on log seulement
+            // En production → log seulement
             error_log("Database connection error: " . $e->getMessage());
             http_response_code(500);
             exit("Erreur de connexion à la base de données.");

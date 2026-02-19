@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$titre, $categorie]);
             $platId = (int)$pdo->lastInsertId();
 
-            // 2) Insérer les allergènes (table de liaison)
+            // 2) Insérer les allergènes (table de liaison plat_allergene)
             if (!empty($allergenesSelectionnes)) {
                 $stmtAll = $pdo->prepare("INSERT INTO plat_allergene (plat_id, allergene_id) VALUES (?, ?)");
                 foreach ($allergenesSelectionnes as $aid) {

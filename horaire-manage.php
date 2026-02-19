@@ -11,14 +11,14 @@ $pdo = db();
 $success = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Tableau horaires[jour][ouverture/fermeture]
+    // Tableau horaires [jour] [ouverture/fermeture]
     $horaires = $_POST['horaires'] ?? [];
 
     foreach ($horaires as $horaireId => $values) {
         $ouverture = trim($values['ouverture'] ?? '');
         $fermeture = trim($values['fermeture'] ?? '');
 
-        // Si vide => fermé (NULL/NULL)
+        // Si vide -> fermé (NULL/NULL)
         if ($ouverture === '' || $fermeture === '') {
             $stmt = $pdo->prepare("UPDATE horaire SET heure_ouverture = NULL, heure_fermeture = NULL WHERE horaire_id = ?");
             $stmt->execute([(int)$horaireId]);

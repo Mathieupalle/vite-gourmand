@@ -12,7 +12,7 @@ $pdo = db();
 $errors = [];
 $success = null;
 
-// Listes pour selects
+// Liste pour SELECTS
 $themes = $pdo->query("SELECT theme_id, libelle FROM theme ORDER BY libelle")->fetchAll();
 $regimes = $pdo->query("SELECT regime_id, libelle FROM regime ORDER BY libelle")->fetchAll();
 

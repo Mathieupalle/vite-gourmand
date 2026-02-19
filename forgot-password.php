@@ -1,8 +1,7 @@
 <?php
 // forgot-password.php : demande de réinitialisation de mot de passe
-// - L'utilisateur saisit son email
-// - Si email existe : génération d'un token + expiration
-// - Envoi d'un lien de reset
+// L'utilisateur saisit son email
+// Si email existe : génération d'un token + expiration et envoi d'un lien de reset
 
 session_start();
 require_once __DIR__ . '/src/db.php';
@@ -26,13 +25,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = $stmt->fetch();
 
         // Pour éviter de révéler si l'email existe ou non :
-        // Affichage d'un message générique
+        // Affichage d'un message de confirmation d'envoi
         $success = "Si un compte existe avec cet email, un lien de réinitialisation a été envoyé.";
 
         if ($user) {
             $userId = (int)$user['utilisateur_id'];
 
-            // Token simple et sécurisé
+            // Génération d'un token sécurisé
             $token = bin2hex(random_bytes(32)); // 64 caractères hex
             $expires = date('Y-m-d H:i:s', time() + 3600); // 1h
 

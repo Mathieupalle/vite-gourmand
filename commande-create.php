@@ -1,5 +1,6 @@
 <?php
 // commande-create.php
+// Création de la commande
 
 session_start();
 require_once __DIR__ . '/src/db.php';
@@ -63,7 +64,7 @@ if (
     die("Données invalides.");
 }
 
-// Récupérer infos menu (j'ajoute titre pour l'analytics Mongo)
+// Récupérer infos menu (j'ajoute titre pour l'analytics MongoDB Atlas)
 $stmt = $pdo->prepare("
     SELECT titre, prix_par_personne, nombre_personne_minimum
     FROM menu
@@ -150,10 +151,8 @@ $commandeId = (int)$pdo->lastInsertId();
 $stmt = $pdo->prepare("INSERT INTO commande_suivi (commande_id, statut) VALUES (?, ?)");
 $stmt->execute([$commandeId, 'en_attente']);
 
-/**
- * AJOUT MONGODB (NoSQL) : on enregistre une version “analytics” de la commande
- * Ne bloque jamais le parcours utilisateur : en cas d’échec Mongo, on ignore.
- */
+
+// AJOUT MONGODB (NoSQL) : on enregistre une version “analytics” de la commande
 $mongoUri = getenv('MONGODB_URI');
 if ($mongoUri) {
     try {
