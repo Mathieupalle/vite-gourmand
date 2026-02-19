@@ -92,32 +92,32 @@ foreach ($menusAgg as $m) {
         </select><br><br>
 
         <!-- AJOUT: compare_mode (évite le JS qui casse et pilote l'alignement) -->
-        <label>Alignement comparaison</label><br>
+        <label>Mode de Comparaison</label><br>
         <select id="compare_mode">
-            <option value="relative" selected>Relatif (J0 aligné)</option>
-            <option value="absolute">Absolu (dates réelles)</option>
+            <option value="relative" selected>Jour par Jour (début = début)</option>
+            <option value="absolute">Par dates (calendrier)</option>
         </select><br><br>
     </div>
 
     <div class="card">
-        <label>Menus</label><br>
+        <label>Menu A</label><br>
         <select id="menu_id" style="min-width:220px;">
             <option value="">Tous les menus</option>
             <?php foreach ($menus as $m): ?>
                 <option value="<?= (int)$m['menu_id'] ?>">
-                    <?= htmlspecialchars($m['titre']) ?> (ID <?= (int)$m['menu_id'] ?>)
+                    <?= htmlspecialchars($m['titre']) ?>)
                 </option>
             <?php endforeach; ?>
         </select>
 
         <!-- AJOUT: menu B pour comparaison Menu A vs Menu B -->
         <br><br>
-        <label>Comparer avec (Menu B)</label><br>
+        <label>Comparer avec Menu B</label><br>
         <select id="compare_menu_id" style="min-width:220px;">
             <option value="">— Aucun —</option>
             <?php foreach ($menus as $m): ?>
                 <option value="<?= (int)$m['menu_id'] ?>">
-                    <?= htmlspecialchars($m['titre']) ?> (ID <?= (int)$m['menu_id'] ?>)
+                    <?= htmlspecialchars($m['titre']) ?>)
                 </option>
             <?php endforeach; ?>
         </select>
