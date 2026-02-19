@@ -1,2 +1,6 @@
 .DS_Store
 .DS_Store
+config.local.php
+.env
+vendor/
+.DS_Store
