@@ -7,8 +7,16 @@ require_once __DIR__ . '/src/db.php';
 $user = $_SESSION['user'] ?? null;
 $pdo = db();
 
+// Base URL automatique (local: /vite-gourmand, heroku: "")
+$baseUrl = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
+if ($baseUrl === '/.') $baseUrl = '';
+
 // Horaires
-$horaires = $pdo->query("SELECT jour, heure_ouverture, heure_fermeture FROM horaire ORDER BY horaire_id ASC")->fetchAll();
+$horaires = $pdo->query("
+    SELECT jour, heure_ouverture, heure_fermeture
+    FROM horaire
+    ORDER BY horaire_id ASC
+")->fetchAll();
 
 // Avis validés (affichés sur l'accueil)
 $avisValides = $pdo->query("
@@ -18,120 +26,231 @@ $avisValides = $pdo->query("
     ORDER BY avis_id DESC
     LIMIT 5
 ")->fetchAll();
+
+// Rôle
+$role = $user['role'] ?? '';
+$isStaff = ($role === 'employee' || $role === 'admin');
 ?>
 <!doctype html>
 <html lang="fr">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>Vite & Gourmand - Traiteur en ligne</title>
+    <meta name="description" content="Traiteur événementiel à Bordeaux : menus, plats, livraison, prestations. Commande en ligne simple et sécurisée.">
+
+    <!-- Bootstrap 5 (CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Assets -->
+    <link rel="stylesheet" href="<?= $baseUrl ?>/assets/css/style.css">
 </head>
-<body>
+<body class="bg-white">
 
-<header>
-    <h1>Vite & Gourmand</h1>
-    <p>Traiteur événementiel à Bordeaux — 25 ans d’expérience.</p>
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-semibold" href="<?= $baseUrl ?>/index.php">
+            <span class="me-2" style="display:inline-block;width:10px;height:10px;border-radius:999px;background:#8b5e34;"></span>
+            Vite & Gourmand
+        </a>
 
-    <hr>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                aria-controls="mainNav" aria-expanded="false" aria-label="Ouvrir le menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <!-- Menu de navigation -->
-    <nav>
-        <a href="index.php">Accueil</a> |
-        <a href="menus.php">Tous les menus</a> |
-        <a href="contact.php">Contact</a>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                <li class="nav-item"><a class="nav-link" href="<?= $baseUrl ?>/menus.php">Tous les menus</a></li>
+                <li class="nav-item"><a class="nav-link" href="<?= $baseUrl ?>/contact.php">Contact</a></li>
 
-        <?php if ($user): ?>
-            | <a href="mes-commandes.php">Mes commandes</a>
-            <?php if (($user['role'] ?? '') === 'employee' || ($user['role'] ?? '') === 'admin'): ?>
-                | <a href="admin.php">Espace gestion</a>
-            <?php endif; ?>
+                <?php if ($user): ?>
+                    <li class="nav-item"><a class="nav-link" href="<?= $baseUrl ?>/mes-commandes.php">Mes commandes</a></li>
 
-            | <a href="profil.php">Mon profil</a>
-            | <a href="logout.php">Déconnexion</a>
-        <?php else: ?>
-            | <a href="login.php">Connexion</a>
-            | <a href="register.php">Créer un compte</a>
-        <?php endif; ?>
-    </nav>
+                    <?php if ($isStaff): ?>
+                        <li class="nav-item">
+                            <a class="btn btn-outline-secondary btn-sm px-3" href="<?= $baseUrl ?>/admin.php">Espace gestion</a>
+                        </li>
+                    <?php endif; ?>
 
-    <hr>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Mon compte
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="<?= $baseUrl ?>/profil.php">Mon profil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="<?= $baseUrl ?>/logout.php">Déconnexion</a></li>
+                        </ul>
+                    </li>
+                <?php else: ?>
+                    <li class="nav-item ms-lg-2">
+                        <a class="btn btn-outline-secondary btn-sm px-3" href="<?= $baseUrl ?>/login.php">Connexion</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary btn-sm px-3" style="background:#8b5e34;border-color:#8b5e34;"
+                           href="<?= $baseUrl ?>/register.php">Créer un compte</a>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<header class="py-5" style="background:linear-gradient(180deg,#f7efe6,#fff);border-bottom:1px solid rgba(0,0,0,.06);">
+    <div class="container py-2">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+        <span class="badge rounded-pill mb-3" style="background:#f7efe6;color:#553820;border:1px solid rgba(0,0,0,.06);">
+          Traiteur événementiel • Bordeaux • 25 ans d’expérience
+        </span>
+
+                <h1 class="display-6 fw-semibold">Menus & prestations pour vos événements</h1>
+                <p class="text-muted mt-3 mb-4">
+                    Mariages, séminaires, anniversaires ou événements privés : consultez nos menus et passez commande en ligne
+                    de manière simple et sécurisée.
+                </p>
+
+                <div class="d-flex gap-2 flex-wrap">
+                    <a class="btn btn-primary px-4" style="background:#8b5e34;border-color:#8b5e34;"
+                       href="<?= $baseUrl ?>/menus.php">Voir les menus</a>
+                    <a class="btn btn-outline-secondary px-4" href="<?= $baseUrl ?>/contact.php">Demander un devis</a>
+                </div>
+
+                <?php if ($user): ?>
+                    <div class="small text-muted mt-3">
+                        Connecté<?= isset($user['prenom']) ? ' en tant que ' . htmlspecialchars($user['prenom']) : '' ?>.
+                    </div>
+                <?php else: ?>
+                    <div class="small text-muted mt-3">Astuce : crée un compte pour suivre tes commandes et laisser un avis.</div>
+                <?php endif; ?>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="p-4 bg-white shadow-sm" style="border:1px solid rgba(0,0,0,.08);border-radius:16px;">
+                    <div class="fw-semibold mb-2">Ce que vous obtenez</div>
+                    <ul class="text-muted small mb-0">
+                        <li class="mb-2"><strong>Qualité :</strong> produits sélectionnés, préparation soignée.</li>
+                        <li class="mb-2"><strong>Organisation :</strong> régimes & allergènes pris en compte.</li>
+                        <li class="mb-2"><strong>Logistique :</strong> livraison et matériel selon prestation.</li>
+                        <li><strong>Suivi :</strong> commande en ligne + statut et historique.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 </header>
 
-<main>
+<main class="container my-5">
 
-    <!-- Présentation entreprise -->
-    <section>
-        <h2>Présentation</h2>
-        <p>
-            Vite & Gourmand est une entreprise de restauration événementielle basée à Bordeaux.
-            Nous proposons des menus adaptés aux mariages, séminaires, anniversaires et événements privés.
-        </p>
-        <p>
-            Cette application permet de consulter nos menus et de passer commande en ligne de manière simple et sécurisée.
-        </p>
+    <section class="mb-5">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="p-4 h-100" style="border:1px solid rgba(0,0,0,.08);border-radius:16px;">
+                    <div class="fw-semibold">Menus</div>
+                    <div class="text-muted small mt-2">Découvrez nos menus pour tous types d’événements.</div>
+                    <a class="btn btn-sm btn-link px-0 mt-2" href="<?= $baseUrl ?>/menus.php">Explorer →</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 h-100" style="border:1px solid rgba(0,0,0,.08);border-radius:16px;">
+                    <div class="fw-semibold">Commande</div>
+                    <div class="text-muted small mt-2">Passez commande en ligne et suivez vos demandes.</div>
+                    <?php if ($user): ?>
+                        <a class="btn btn-sm btn-link px-0 mt-2" href="<?= $baseUrl ?>/mes-commandes.php">Voir mes commandes →</a>
+                    <?php else: ?>
+                        <a class="btn btn-sm btn-link px-0 mt-2" href="<?= $baseUrl ?>/login.php">Se connecter →</a>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 h-100" style="border:1px solid rgba(0,0,0,.08);border-radius:16px;">
+                    <div class="fw-semibold">Prestation & devis</div>
+                    <div class="text-muted small mt-2">Un besoin spécifique ? Contactez-nous pour un devis.</div>
+                    <a class="btn btn-sm btn-link px-0 mt-2" href="<?= $baseUrl ?>/contact.php">Contacter →</a>
+                </div>
+            </div>
+        </div>
     </section>
 
-    <hr>
+    <section class="mb-5">
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <h2 class="h4 fw-semibold">Avis clients</h2>
+                <p class="text-muted mb-3">Derniers avis validés.</p>
 
-    <!-- Mise en avant professionnalisme -->
-    <section>
-        <h2>Notre équipe</h2>
-        <ul>
-            <li><strong>Cuisine :</strong> préparation sur place avec produits sélectionnés.</li>
-            <li><strong>Organisation :</strong> prise en compte des régimes et allergènes.</li>
-            <li><strong>Logistique :</strong> livraison et prêt de matériel selon la prestation.</li>
-        </ul>
-        <p>
-            Nous mettons l’accent sur la qualité, la ponctualité et le suivi des commandes.
-        </p>
-    </section>
+                <?php if (!$avisValides): ?>
+                    <div class="alert alert-secondary mb-0">Aucun avis validé pour le moment.</div>
+                <?php else: ?>
+                    <ul class="list-group">
+                        <?php foreach ($avisValides as $a): ?>
+                            <li class="list-group-item d-flex gap-3 align-items-start">
+                <span class="badge rounded-pill mt-1" style="background:#f7efe6;color:#553820;border:1px solid rgba(0,0,0,.06);">
+                  <?= (int)$a['note']; ?>/5
+                </span>
+                                <div>
+                                    <div class="text-muted small">Avis</div>
+                                    <div><?= htmlspecialchars($a['description']); ?></div>
+                                </div>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+            </div>
 
-    <hr>
+            <div class="col-lg-5">
+                <h2 class="h4 fw-semibold">Horaires</h2>
+                <p class="text-muted mb-3">Ouverture & fermeture.</p>
 
-    <!-- Avis clients validés -->
-    <section>
-        <h2>Avis clients</h2>
+                <div class="bg-white p-3" style="border:1px solid rgba(0,0,0,.08);border-radius:16px;">
+                    <ul class="list-unstyled mb-0">
+                        <?php foreach ($horaires as $h): ?>
+                            <li class="d-flex justify-content-between py-2 border-bottom">
+                                <span class="fw-semibold"><?= htmlspecialchars($h['jour']); ?></span>
+                                <span class="text-muted">
+                  <?php if ($h['heure_ouverture'] && $h['heure_fermeture']): ?>
+                      <?= htmlspecialchars(substr($h['heure_ouverture'], 0, 5)); ?> - <?= htmlspecialchars(substr($h['heure_fermeture'], 0, 5)); ?>
+                  <?php else: ?>
+                      Fermé
+                  <?php endif; ?>
+                </span>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
 
-        <?php if (!$avisValides): ?>
-            <p>Aucun avis validé pour le moment.</p>
-        <?php else: ?>
-            <ul>
-                <?php foreach ($avisValides as $a): ?>
-                    <li>
-                        <strong><?php echo (int)$a['note']; ?>/5</strong> —
-                        <?php echo htmlspecialchars($a['description']); ?>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        <?php endif; ?>
+                <div class="small text-muted mt-3">
+                    Besoin d’un créneau particulier ? <a href="<?= $baseUrl ?>/contact.php">Contactez-nous</a>.
+                </div>
+            </div>
+        </div>
     </section>
 
 </main>
 
-<hr>
-
-<footer>
-    <h3>Horaires</h3>
-    <ul>
-        <?php foreach ($horaires as $h): ?>
-            <li>
-                <?php echo htmlspecialchars($h['jour']); ?> :
-                <?php if ($h['heure_ouverture'] && $h['heure_fermeture']): ?>
-                    <?php echo htmlspecialchars(substr($h['heure_ouverture'],0,5)); ?> - <?php echo htmlspecialchars(substr($h['heure_fermeture'],0,5)); ?>
-                <?php else: ?>
-                    Fermé
-                <?php endif; ?>
-            </li>
-        <?php endforeach; ?>
-    </ul>
-
-    <p>
-        <a href="mentions-legales.php">Mentions légales</a> |
-        <a href="cgv.php">Conditions générales de vente</a>
-    </p>
-
-    <p>© <?php echo date('Y'); ?> Vite & Gourmand</p>
+<footer class="border-top">
+    <div class="container py-4">
+        <div class="row g-3 align-items-center">
+            <div class="col-md-6">
+                <div class="fw-semibold">Vite & Gourmand</div>
+                <div class="text-muted small">Traiteur en ligne • Menus • Livraison • Prestations</div>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="small">
+                    <a class="link-secondary me-3" href="<?= $baseUrl ?>/mentions-legales.php">Mentions légales</a>
+                    <a class="link-secondary" href="<?= $baseUrl ?>/cgv.php">CGV</a>
+                </div>
+                <div class="text-muted small mt-2">© <?= date('Y'); ?> Vite & Gourmand</div>
+            </div>
+        </div>
+    </div>
 </footer>
 
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- JS -->
+<script src="<?= $baseUrl ?>/assets/js/app.js"></script>
 </body>
 </html>
