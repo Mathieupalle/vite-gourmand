@@ -12,31 +12,42 @@ $isAdmin = (
 );
 
 if (!$isAdmin) {
-    header('Location: login.php');
-    exit;
+    http_response_code(403);
+    exit('Accès refusé');
 }
 
-require_once __DIR__ . '/src/db.php';
-$pdo = db();
+require_once __DIR__ . '/vendor/autoload.php';
 
-// Dropdown des menus
+$mongoUri = getenv('MONGODB_URI');
+if (!$mongoUri) {
+    http_response_code(500);
+    exit('MONGODB_URI manquant');
+}
+
+$client = new MongoDB\Client($mongoUri);
+$col = $client->selectCollection('vitegourmand', 'orders_analytics');
+
+// Récupération des menus distincts (pour le filtre)
+$menusAgg = $col->aggregate([
+        ['$group' => ['_id' => '$menuId', 'titre' => ['$first' => '$menuTitre']]],
+        ['$sort' => ['titre' => 1]],
+]);
 $menus = [];
-try {
-    $stmt = $pdo->query("SELECT menu_id, titre FROM menu ORDER BY titre ASC");
-    $menus = $stmt->fetchAll() ?: [];
-} catch (Throwable $e) {
-    $menus = [];
+foreach ($menusAgg as $m) {
+    $id = (int)($m['_id'] ?? 0);
+    if ($id <= 0) continue;
+    $menus[] = ['menu_id' => $id, 'titre' => (string)($m['titre'] ?? ('Menu ' . $id))];
 }
 ?>
 <!doctype html>
 <html lang="fr">
 <head>
-    <meta charset="utf-8"/>
-    <title>Statistiques</title>
+    <meta charset="utf-8">
+    <title>Stats (MongoDB)</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; }
-        .row { display:flex; gap:12px; align-items:end; flex-wrap:wrap; }
+        body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; padding:16px; }
+        .row { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-start; }
         .card { border:1px solid #ddd; border-radius:8px; padding:12px; min-width:240px; }
         table { width:100%; border-collapse:collapse; }
         th, td { border:1px solid #ddd; padding:8px; }
@@ -47,8 +58,8 @@ try {
     </style>
 </head>
 <body>
-<h1>Statistiques (MongoDB)</h1>
-<p><a href="admin.php">← Retour à l'espace Gestion</a></p>
+<h1>statistiques (mongodb)</h1>
+<p><a href="admin.php">← retour à l'espace gestion</a></p>
 
 <div class="row">
     <div class="card">
@@ -79,6 +90,13 @@ try {
             <option value="month">Mois</option>
             <option value="year">Année</option>
         </select><br><br>
+
+        <!-- AJOUT: compare_mode (évite le JS qui casse et pilote l'alignement) -->
+        <label>Alignement comparaison</label><br>
+        <select id="compare_mode">
+            <option value="relative" selected>Relatif (J0 aligné)</option>
+            <option value="absolute">Absolu (dates réelles)</option>
+        </select><br><br>
     </div>
 
     <div class="card">
@@ -91,13 +109,26 @@ try {
                 </option>
             <?php endforeach; ?>
         </select>
+
+        <!-- AJOUT: menu B pour comparaison Menu A vs Menu B -->
+        <br><br>
+        <label>Comparer avec (Menu B)</label><br>
+        <select id="compare_menu_id" style="min-width:220px;">
+            <option value="">— Aucun —</option>
+            <?php foreach ($menus as $m): ?>
+                <option value="<?= (int)$m['menu_id'] ?>">
+                    <?= htmlspecialchars($m['titre']) ?> (ID <?= (int)$m['menu_id'] ?>)
+                </option>
+            <?php endforeach; ?>
+        </select>
         <div class="muted" style="margin-top:10px;">
+            Si Menu B est choisi, comparaison <strong>Menu A vs Menu B</strong> sur la même période A.
         </div>
     </div>
 
     <div class="card">
         <button id="btnLoad" class="btn">Afficher</button>
-        <button id="btnClearCompare" class="btn" style="margin-top:8px;">Vider comparaison</button>
+        <button id="btnClear" class="btn" style="margin-top:10px;">Reset</button>
     </div>
 </div>
 
@@ -108,7 +139,7 @@ try {
         <div class="muted">Commandes: <span id="kpiAOrders">—</span></div>
     </div>
     <div class="card">
-        <div class="muted">CA Période B</div>
+        <div class="muted" id="kpiBLabel">CA Période B</div>
         <div style="font-size:24px;" id="kpiB">—</div>
         <div class="muted">Commandes: <span id="kpiBOrders">—</span></div>
     </div>
@@ -133,8 +164,8 @@ try {
         <th>Période</th>
         <th>CA A (€)</th>
         <th>Commandes A</th>
-        <th>CA B (€)</th>
-        <th>Commandes B</th>
+        <th id="thCaB">CA B (€)</th>
+        <th id="thOrdersB">Commandes B</th>
     </tr>
     </thead>
     <tbody id="tbody"></tbody>
@@ -151,7 +182,8 @@ try {
             compare_end: document.getElementById('compare_end').value,
             group: document.getElementById('group').value,
             compare_mode: document.getElementById('compare_mode').value,
-            menuId: document.getElementById('menu_id').value.trim()
+            menuId: document.getElementById('menu_id').value.trim(),
+            compareMenuId: document.getElementById('compare_menu_id').value.trim()
         };
     }
 
@@ -162,7 +194,13 @@ try {
 
         let url = `/api/revenus-stats.php?start=${encodeURIComponent(p.start)}&end=${encodeURIComponent(p.end)}&group=${encodeURIComponent(p.group)}&compare_mode=${encodeURIComponent(p.compare_mode)}`;
         if (p.menuId) url += `&menu_id=${encodeURIComponent(p.menuId)}`;
-        if (p.compare_start && p.compare_end) url += `&compare_start=${encodeURIComponent(p.compare_start)}&compare_end=${encodeURIComponent(p.compare_end)}`;
+
+        // AJOUT: priorité à compare_menu_id (comparaison menus)
+        if (p.compareMenuId) {
+            url += `&compare_menu_id=${encodeURIComponent(p.compareMenuId)}`;
+        } else if (p.compare_start && p.compare_end) {
+            url += `&compare_start=${encodeURIComponent(p.compare_start)}&compare_end=${encodeURIComponent(p.compare_end)}`;
+        }
 
         const res = await fetch(url);
         const json = await res.json();
@@ -189,24 +227,34 @@ try {
         const bRev = hasCompare ? (json.compare?.totals?.revenue ?? 0) : 0;
         const bOrd = hasCompare ? (json.compare?.totals?.orders ?? 0) : 0;
 
+        // AJOUT: libellés dynamiques selon comparaison menus ou périodes
+        const isMenuCompare = hasCompare && (json.compare_menu_id !== null && json.compare_menu_id !== undefined && String(json.compare_menu_id) !== '' && Number(json.compare_menu_id) > 0);
+
+        const labelB = isMenuCompare ? "Menu B" : "Période B";
+        const kpiBLabelEl = document.getElementById('kpiBLabel');
+        if (kpiBLabelEl) kpiBLabelEl.textContent = "CA " + labelB;
+
+        const thCaB = document.getElementById('thCaB');
+        if (thCaB) thCaB.textContent = isMenuCompare ? "CA Menu B (€)" : "CA B (€)";
+
+        const thOrdersB = document.getElementById('thOrdersB');
+        if (thOrdersB) thOrdersB.textContent = isMenuCompare ? "Commandes Menu B" : "Commandes B";
+
         document.getElementById('kpiA').textContent = eur(aRev);
         document.getElementById('kpiAOrders').textContent = aOrd;
+
         document.getElementById('kpiB').textContent = hasCompare ? eur(bRev) : '—';
         document.getElementById('kpiBOrders').textContent = hasCompare ? bOrd : '—';
 
-        if (hasCompare) {
-            const diff = aRev - bRev;
-            document.getElementById('kpiDiff').textContent = eur(diff);
-            const pct = (bRev === 0) ? null : (diff / bRev) * 100;
-            document.getElementById('kpiPct').textContent = (pct === null) ? '—' : (pct.toFixed(1) + ' %');
-        } else {
-            document.getElementById('kpiDiff').textContent = '—';
-            document.getElementById('kpiPct').textContent = '—';
-        }
+        const diff = aRev - bRev;
+        document.getElementById('kpiDiff').textContent = hasCompare ? eur(diff) : '—';
+        const pct = (bRev > 0) ? ((aRev - bRev) / bRev * 100) : null;
+        document.getElementById('kpiPct').textContent = (hasCompare && pct !== null) ? (pct.toFixed(1) + '%') : '—';
 
         // Table
         const tbody = document.getElementById('tbody');
         tbody.innerHTML = '';
+
         labels.forEach(period => {
             const a = curMap.get(period) || { revenue: 0, orders: 0 };
             const b = cmpMap.get(period) || { revenue: 0, orders: 0 };
@@ -232,25 +280,41 @@ try {
 
         if (hasCompare) {
             datasets.push({
-                label: "CA Période B (€)",
+                label: (isMenuCompare ? "CA Menu B (€)" : "CA Période B (€)"),
                 data: cmpRevenue
             });
         }
 
-        chart = new Chart(document.getElementById('chart'), {
-            type: 'bar',
-            data: { labels, datasets }
+        const ctx = document.getElementById('chart').getContext('2d');
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels,
+                datasets
+            },
+            options: {
+                responsive: true,
+                interaction: { mode: 'index', intersect: false },
+                plugins: { legend: { display: true } },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
         });
     }
 
     document.getElementById('btnLoad').addEventListener('click', loadStats);
-    document.getElementById('btnClearCompare').addEventListener('click', () => {
-        document.getElementById('compare_start').value = '';
-        document.getElementById('compare_end').value = '';
-        loadStats();
-    });
 
-    loadStats();
+    document.getElementById('btnClear').addEventListener('click', () => {
+        document.getElementById('start').value = "<?= htmlspecialchars(date('Y-m-01')) ?>";
+        document.getElementById('end').value = "<?= htmlspecialchars(date('Y-m-d')) ?>";
+        document.getElementById('compare_start').value = "";
+        document.getElementById('compare_end').value = "";
+        document.getElementById('group').value = "day";
+        document.getElementById('compare_mode').value = "relative";
+        document.getElementById('menu_id').value = "";
+        document.getElementById('compare_menu_id').value = "";
+    });
 </script>
 </body>
 </html>

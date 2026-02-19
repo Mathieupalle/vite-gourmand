@@ -40,7 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $upd->execute([$token, $expires, $userId]);
 
             // Lien de reset (local)
-            $resetLink = "http://localhost/vite-gourmand/reset-password.php?token=" . urlencode($token);
+            require_once __DIR__ . '/src/helpers.php';
+            $resetLink = base_url() . "/reset-password.php?token=" . urlencode($token);
 
             // Option 1 : mail
             // @mail($email, "Réinitialisation de votre mot de passe", "Cliquez sur ce lien : $resetLink");

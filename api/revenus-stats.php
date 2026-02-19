@@ -66,78 +66,70 @@ function aggregatePeriod(
             '_id' => $groupId,
             'revenue' => ['$sum' => '$total'],
             'orders' => ['$sum' => 1],
-            'qtyPeople' => ['$sum' => '$nombrePersonne'],
+            'qtyPeople' => ['$sum' => '$qtyPeople'],
         ]],
         ['$sort' => ['_id' => 1]],
     ];
 
-    $data = [];
-    $totalRevenue = 0.0;
-    $totalOrders = 0;
-    $totalPeople = 0;
+    $rows = [];
+    $totals = ['revenue' => 0.0, 'orders' => 0, 'qtyPeople' => 0];
 
-    foreach ($col->aggregate($pipeline) as $doc) {
-        $row = [
-            'period' => (string)$doc->_id,
-            'revenue' => (float)$doc->revenue,
-            'orders' => (int)$doc->orders,
-            'qtyPeople' => (int)$doc->qtyPeople,
+    foreach ($col->aggregate($pipeline) as $r) {
+        $period = (string)($r['_id'] ?? '');
+        $revenue = (float)($r['revenue'] ?? 0);
+        $orders = (int)($r['orders'] ?? 0);
+        $qtyPeople = (int)($r['qtyPeople'] ?? 0);
+
+        $rows[] = [
+            'period' => $period,
+            'revenue' => $revenue,
+            'orders' => $orders,
+            'qtyPeople' => $qtyPeople,
         ];
-        $data[] = $row;
-        $totalRevenue += $row['revenue'];
-        $totalOrders += $row['orders'];
-        $totalPeople += $row['qtyPeople'];
+
+        $totals['revenue'] += $revenue;
+        $totals['orders'] += $orders;
+        $totals['qtyPeople'] += $qtyPeople;
     }
 
-    return [
-        'data' => $data,
-        'totals' => [
-            'revenue' => $totalRevenue,
-            'orders' => $totalOrders,
-            'qtyPeople' => $totalPeople,
-        ]
-    ];
+    return ['data' => $rows, 'totals' => $totals];
 }
 
-function alignRelative(array $currentRows, array $compareRows): array {
-    $labels = array_map(fn($r) => $r['period'], $currentRows);
-
-    $a = $currentRows;
-    $b = [];
-
-    $n = count($labels);
-    for ($i = 0; $i < $n; $i++) {
-        $b[] = $compareRows[$i] ?? [
-            'period' => $labels[$i],
-            'revenue' => 0.0,
-            'orders' => 0,
-            'qtyPeople' => 0,
-        ];
-        $b[$i]['period'] = $labels[$i];
-    }
-
-    return [$labels, $a, $b];
-}
-
-function alignAbsolute(array $currentRows, array $compareRows): array {
-
+function alignRelative(array $a, array $b): array {
+    $len = max(count($a), count($b));
     $labels = [];
-    foreach ($currentRows as $r) $labels[$r['period']] = true;
-    foreach ($compareRows as $r) $labels[$r['period']] = true;
+    $alignedA = [];
+    $alignedB = [];
 
-    $labels = array_keys($labels);
-    sort($labels);
+    for ($i = 0; $i < $len; $i++) {
+        $labels[] = 'T' . ($i + 1);
+        $alignedA[] = $a[$i] ?? ['period' => 'T' . ($i + 1), 'revenue' => 0.0, 'orders' => 0, 'qtyPeople' => 0];
+        $alignedB[] = $b[$i] ?? ['period' => 'T' . ($i + 1), 'revenue' => 0.0, 'orders' => 0, 'qtyPeople' => 0];
+
+        $alignedA[$i]['period'] = 'T' . ($i + 1);
+        $alignedB[$i]['period'] = 'T' . ($i + 1);
+    }
+
+    return [$labels, $alignedA, $alignedB];
+}
+
+function alignAbsolute(array $a, array $b): array {
+    $labels = [];
 
     $mapA = [];
-    foreach ($currentRows as $r) $mapA[$r['period']] = $r;
+    foreach ($a as $r) $mapA[$r['period']] = $r;
 
     $mapB = [];
-    foreach ($compareRows as $r) $mapB[$r['period']] = $r;
+    foreach ($b as $r) $mapB[$r['period']] = $r;
+
+    $periods = array_unique(array_merge(array_keys($mapA), array_keys($mapB)));
+    sort($periods);
 
     $alignedA = [];
     $alignedB = [];
 
-    foreach ($labels as $p) {
+    foreach ($periods as $p) {
+        $labels[] = $p;
         $alignedA[] = $mapA[$p] ?? ['period' => $p, 'revenue' => 0.0, 'orders' => 0, 'qtyPeople' => 0];
         $alignedB[] = $mapB[$p] ?? ['period' => $p, 'revenue' => 0.0, 'orders' => 0, 'qtyPeople' => 0];
     }
@@ -149,16 +141,17 @@ try {
     $start = $_GET['start'] ?? '';
     $end   = $_GET['end'] ?? '';
     $menuId = (int)($_GET['menu_id'] ?? 0);
+    $compareMenuId = isset($_GET['compare_menu_id']) && $_GET['compare_menu_id'] !== '' ? (int)$_GET['compare_menu_id'] : null;
 
     $group = strtolower(trim($_GET['group'] ?? 'day')); // day|week|month|year
     $allowed = ['day', 'week', 'month', 'year'];
     if (!in_array($group, $allowed, true)) {
         http_response_code(400);
-        echo json_encode(['error' => 'group invalide (day|week|month|year)']);
+        echo json_encode(['error' => 'group invalide']);
         exit;
     }
 
-    if ($start === '' || $end === '') {
+    if (!$start || !$end) {
         http_response_code(400);
         echo json_encode(['error' => 'Paramètres requis: start=YYYY-MM-DD&end=YYYY-MM-DD']);
         exit;
@@ -166,7 +159,9 @@ try {
 
     $compareStart = $_GET['compare_start'] ?? '';
     $compareEnd   = $_GET['compare_end'] ?? '';
-    $hasCompare = ($compareStart !== '' && $compareEnd !== '');
+    $hasComparePeriod = ($compareStart !== '' && $compareEnd !== '');
+    $hasCompareMenu   = ($compareMenuId !== null && $compareMenuId > 0);
+    $hasCompare = ($hasCompareMenu || $hasComparePeriod);
 
     $compareMode = strtolower(trim($_GET['compare_mode'] ?? 'relative')); // relative|absolute
     if (!in_array($compareMode, ['relative', 'absolute'], true)) {
@@ -187,10 +182,20 @@ try {
     $compare = null;
 
     if ($hasCompare) {
-        $cStartUtc = new MongoDB\BSON\UTCDateTime(utcMs($compareStart, '00:00:00'));
-        $cEndUtc   = new MongoDB\BSON\UTCDateTime(utcMs($compareEnd,   '23:59:59'));
+        if ($hasCompareMenu) {
+            // Comparaison Menu A vs Menu B sur la même période A
+            $compare = aggregatePeriod($col, $startUtc, $endUtc, $group, (int)$compareMenuId);
 
-        $compare = aggregatePeriod($col, $cStartUtc, $cEndUtc, $group, $menuId);
+            // Pour l'affichage, on considère que la période B = période A (comparaison de menus)
+            $compareStart = $start;
+            $compareEnd   = $end;
+        } else {
+            // Comparaison période A vs période B (même menu / tous menus)
+            $cStartUtc = new MongoDB\BSON\UTCDateTime(utcMs($compareStart, '00:00:00'));
+            $cEndUtc   = new MongoDB\BSON\UTCDateTime(utcMs($compareEnd,   '23:59:59'));
+
+            $compare = aggregatePeriod($col, $cStartUtc, $cEndUtc, $group, $menuId);
+        }
 
         if ($compareMode === 'relative') {
             [$labels, $a, $b] = alignRelative($current['data'], $compare['data']);
@@ -205,6 +210,7 @@ try {
     echo json_encode([
         'group' => $group,
         'menu_id' => $menuId,
+        'compare_menu_id' => $compareMenuId,
         'compare_mode' => $compareMode,
         'labels' => $labels,
 

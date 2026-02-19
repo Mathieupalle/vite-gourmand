@@ -204,7 +204,8 @@ if ($newStatut === 'terminee') {
         $subject = "Votre commande est terminée - Vite & Gourmand";
 
         // lien vers avis
-        $link = "http://localhost/vite-gourmand/avis-create.php?commande_id=" . $commandeId;
+        require_once __DIR__ . '/src/helpers.php';
+        $link = base_url() . "/avis-create.php?commande_id=" . urlencode((string)$commandeId);
 
         $message = "Bonjour,\n\n"
             . "Votre commande est terminée.\n"
