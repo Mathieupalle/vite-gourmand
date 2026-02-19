@@ -58,7 +58,7 @@ foreach ($menusAgg as $m) {
     </style>
 </head>
 <body>
-<h1>statistiques (mongodb)</h1>
+<h1>Statistiques (MongoDB Atlas)</h1>
 <p><a href="admin.php">← retour à l'espace gestion</a></p>
 
 <div class="row">
