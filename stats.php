@@ -105,7 +105,7 @@ foreach ($menusAgg as $m) {
             <option value="">Tous les menus</option>
             <?php foreach ($menus as $m): ?>
                 <option value="<?= (int)$m['menu_id'] ?>">
-                    <?= htmlspecialchars($m['titre']) ?>)
+                    <?= htmlspecialchars($m['titre']) ?>
                 </option>
             <?php endforeach; ?>
         </select>
@@ -117,7 +117,7 @@ foreach ($menusAgg as $m) {
             <option value="">— Aucun —</option>
             <?php foreach ($menus as $m): ?>
                 <option value="<?= (int)$m['menu_id'] ?>">
-                    <?= htmlspecialchars($m['titre']) ?>)
+                    <?= htmlspecialchars($m['titre']) ?>
                 </option>
             <?php endforeach; ?>
         </select>
@@ -152,12 +152,12 @@ foreach ($menusAgg as $m) {
 
 <hr>
 
-<h2>Comparaison commandes / CA (graphique)</h2>
+<h2>Graphique : Comparaison commandes / Chiffre d'affaires</h2>
 <canvas id="chart" height="90"></canvas>
 
 <hr>
 
-<h2>Détails (table)</h2>
+<h2>Tableau détaillé</h2>
 <table>
     <thead>
     <tr>
