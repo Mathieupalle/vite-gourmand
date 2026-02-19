@@ -1,0 +1,23 @@
+:root{
+    --brand:#8b5e34;
+    --brand-2:#f7efe6;
+}
+
+.brand-dot{
+    display:inline-block;
+    width:10px;height:10px;border-radius:999px;
+    background:var(--brand);
+    vertical-align:middle;
+}
+
+.hero{
+    background: linear-gradient(180deg, var(--brand-2), #fff);
+    border-bottom: 1px solid rgba(0,0,0,.06);
+}
+
+.btn-primary{
+    background:var(--brand);
+    border-color:var(--brand);
+}
+.btn-primary:hover,
+.btn-primary:focus{ filter:brightness(.95); }
