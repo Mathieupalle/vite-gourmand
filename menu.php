@@ -79,12 +79,12 @@ foreach ($rows as $row) {
 
 // 5) Galerie d’images
 $imagesWeb = [];
-$dir = __DIR__ . "/assets/menus/menu-" . $menuId;
+$dir = __DIR__ . "/assets/img/menus/menu-" . $menuId;
 
 if (is_dir($dir)) {
     $files = glob($dir . "/*.{jpg,jpeg,png,webp}", GLOB_BRACE);
     foreach ($files as $f) {
-        $imagesWeb[] = "assets/menus/menu-" . $menuId . "/" . basename($f);
+        $imagesWeb[] = "assets/img/menus/menu-" . $menuId . "/" . basename($f);
     }
 }
 
