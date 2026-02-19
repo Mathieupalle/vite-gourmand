@@ -15,7 +15,7 @@ if ($id <= 0) {
     die("ID invalide.");
 }
 
-// Récup menu
+// Récupération menu
 $stmt = $pdo->prepare("SELECT * FROM menu WHERE menu_id = ?");
 $stmt->execute([$id]);
 $menu = $stmt->fetch();
@@ -24,7 +24,7 @@ if (!$menu) {
     die("Menu introuvable.");
 }
 
-// listes select
+// Liste pour SELECTS
 $themes = $pdo->query("SELECT theme_id, libelle FROM theme ORDER BY libelle")->fetchAll();
 $regimes = $pdo->query("SELECT regime_id, libelle FROM regime ORDER BY libelle")->fetchAll();
 
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
 
         $success = "Menu modifié.";
-        // recharger les données
+        // Recharger les données
         $stmt = $pdo->prepare("SELECT * FROM menu WHERE menu_id = ?");
         $stmt->execute([$id]);
         $menu = $stmt->fetch();

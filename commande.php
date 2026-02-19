@@ -155,7 +155,7 @@ $today = date('Y-m-d');
 <p><a href="menu.php?id=<?php echo (int)$menu['menu_id']; ?>">← Retour au menu</a></p>
 
 <script>
-    // --- Prix côté client (juste pour affichage, le serveur recalculera aussi) ---
+    // Prix côté client (juste pour l'affichage, le serveur recalculera aussi)
     const PRIX_PAR_PERSONNE = <?php echo json_encode($prixParPersonne); ?>;
     const MIN_PERSONNES = <?php echo json_encode($minPers); ?>;
 
@@ -202,7 +202,7 @@ $today = date('Y-m-d');
         prixTotalEl.textContent = round2(total).toFixed(2);
     }
 
-    // --- Copier prestation -> livraison si checkbox cochée ---
+    // Copier prestation -> livraison si checkbox cochée
     const same = document.getElementById('sameAddress');
     const adressePresta = document.querySelector('input[name="adresse_prestation"]');
     const villePresta = document.querySelector('input[name="ville_prestation"]');
@@ -226,7 +226,7 @@ $today = date('Y-m-d');
     adressePresta.addEventListener('input', syncAddress);
     villePresta.addEventListener('input', syncAddress);
 
-    // Recalcul prix à chaque changement
+    // Recalculer prix à chaque changement
     nbInput.addEventListener('input', calc);
     villeLivraisonInput.addEventListener('input', calc);
     distanceKmInput.addEventListener('input', calc);

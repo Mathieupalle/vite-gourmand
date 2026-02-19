@@ -30,7 +30,7 @@ if (!$menu) {
     die("Menu introuvable.");
 }
 
-// 3) Plats + allergènes (avec catégorie)
+// 3) Plats + allergènes (avec catégories)
 $stmtPlats = $pdo->prepare("
     SELECT
         p.plat_id,

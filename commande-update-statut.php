@@ -1,9 +1,8 @@
 <?php
 // commande-update-statut.php
 // Met à jour le statut d’une commande (employee / admin).
-// IMPORTANT : si un EMPLOYÉ met le statut "annulee", il doit obligatoirement renseigner :
-// - le mode de contact (telephone ou mail)
-// - le motif
+// Si un EMPLOYÉ met le statut "annulee", il doit obligatoirement renseigner :
+// Le mode de contact (telephone ou mail) et le motif d'annulation.
 
 session_start();
 require_once __DIR__ . '/src/db.php';
@@ -39,7 +38,7 @@ if (!in_array($newStatut, $allowedStatus, true)) {
     die("Statut invalide.");
 }
 
-// Si employé => on autorise la mise à jour de tous les statuts sauf annulee => motif obligatoire
+// Si employé : on autorise la mise à jour de tous les statuts sauf annulee => motif obligatoire
 $modeContact = null;
 $motif = null;
 
@@ -143,10 +142,8 @@ L’équipe Vite & Gourmand
 
     $pdo->commit();
 
-    /**
-     * AJOUT MongoDB (NoSQL) : mise à jour du statut analytics
-     * Si MongoDB échoue, on ne bloque pas la mise à jour SQL.
-     */
+
+    // AJOUT MongoDB (NoSQL) : mise à jour du statut analytics
     $mongoUri = getenv('MONGODB_URI');
     if ($mongoUri) {
         try {
@@ -160,7 +157,7 @@ L’équipe Vite & Gourmand
                 'updatedAt' => new MongoDB\BSON\UTCDateTime((int) round(microtime(true) * 1000)),
             ];
 
-            // Si annulation employé => on stocke aussi le motif pour l'analyse
+            // Si annulation employé : on stocke aussi le motif pour l'analyse
             if ($newStatut === 'annulee') {
                 $set['annulation'] = [
                     'mode_contact' => $modeContact,
@@ -186,10 +183,10 @@ L’équipe Vite & Gourmand
     echo "Erreur : " . htmlspecialchars($e->getMessage());
 }
 
-// 6) Envoyer mail commande terminée => laissez un avis
+// 6) Envoyer mail commande terminée -> laissez un avis
 if ($newStatut === 'terminee') {
 
-    // récupérer email du client
+    // Récupérer email du client
     $stmtMail = $pdo->prepare("
         SELECT u.email
         FROM commande c
@@ -203,7 +200,7 @@ if ($newStatut === 'terminee') {
         $to = $client['email'];
         $subject = "Votre commande est terminée - Vite & Gourmand";
 
-        // lien vers avis
+        // Lien vers avis
         require_once __DIR__ . '/src/helpers.php';
         $link = base_url() . "/avis-create.php?commande_id=" . urlencode((string)$commandeId);
 

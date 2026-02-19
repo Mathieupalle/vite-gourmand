@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $ville = trim($_POST['ville'] ?? '');
     $adresse = trim($_POST['adresse_postale'] ?? '');
 
-    // Contrôles
+    // Contrôle nom
     if ($nom === '') {
         $errors[] = "Le nom est obligatoire.";
     }

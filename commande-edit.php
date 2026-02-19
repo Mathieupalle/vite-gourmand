@@ -1,4 +1,6 @@
 <?php
+// Modifier une commande (si pas encore statut acceptée)
+
 session_start();
 require_once __DIR__ . '/src/db.php';
 
@@ -41,7 +43,8 @@ $success = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $datePrestation = $_POST['date_prestation'] ?? '';
     $dateLivraison  = $_POST['date_livraison'] ?? '';
-    // --- Vérification dates : pas avant aujourd'hui ---
+
+    // Vérification dates : pas avant aujourd'hui
     $today = new DateTimeImmutable('today');
     $dp = DateTimeImmutable::createFromFormat('Y-m-d', $date_prestation);
     $dl = DateTimeImmutable::createFromFormat('Y-m-d', $date_livraison);
@@ -75,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if ($distanceKm < 0) $distanceKm = 0;
 
-    // Recalcul livraison + remise (même logique que commande-create)
+    // Recalculer livraison + remise
     $prixPers = (float)$c['prix_menu'];
     $sousTotal = $nb * $prixPers;
 

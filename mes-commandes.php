@@ -84,7 +84,7 @@ if ($commandes) {
     }
 }
 
-// Helpers simples
+// "Helpers"
 function euro($n): string {
     return number_format((float)$n, 2, ',', ' ') . ' €';
 }

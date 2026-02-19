@@ -6,7 +6,7 @@ require_once __DIR__ . '/src/db.php';
 
 $pdo = db();
 
-// Pour remplir les <select> (thèmes + régimes)
+// Liste pour SELECTS
 $themes = $pdo->query("SELECT theme_id, libelle FROM theme ORDER BY libelle")->fetchAll();
 $regimes = $pdo->query("SELECT regime_id, libelle FROM regime ORDER BY libelle")->fetchAll();
 ?>

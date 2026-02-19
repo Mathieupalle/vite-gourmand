@@ -1,5 +1,5 @@
 <?php
-// commande-annuler.php : annuler ou refuser une commande
+// commande-annuler.php : annuler une commande
 // Ajoute une ligne dans commande_suivi
 
 session_start();
