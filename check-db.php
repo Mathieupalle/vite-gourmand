@@ -24,3 +24,10 @@ $tableCount = $pdo->query("SELECT COUNT(*) FROM information_schema.tables WHERE 
 
 echo "DB={$dbName}\n";
 echo "Tables={$tableCount}\n";
+
+$tables = $pdo->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN);
+
+foreach ($tables as $t) {
+    $count = $pdo->query("SELECT COUNT(*) FROM `$t`")->fetchColumn();
+    echo "{$t}={$count}\n";
+}
