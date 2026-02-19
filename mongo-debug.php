@@ -1,11 +1,22 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
 
-$mongo = new MongoDB\Client(getenv('MONGODB_URI'));
-$db = $mongo->selectDatabase('vite_gourmand');
+try {
+    $uri = getenv('MONGODB_URI');
+    if (!$uri) {
+        throw new RuntimeException("MONGODB_URI manquant");
+    }
 
-$collections = $db->listCollections();
+    $mongo = new MongoDB\Client($uri);
+    $col = $mongo->selectCollection('vitegourmand', 'orders_analytics');
 
-foreach ($collections as $collection) {
-    echo $collection->getName() . PHP_EOL;
+    $res = $col->insertOne([
+        'type' => 'debug',
+        'createdAt' => new MongoDB\BSON\UTCDateTime((int) round(microtime(true) * 1000)),
+        'where' => 'heroku-run'
+    ]);
+
+    echo "Inserted ID: " . (string)$res->getInsertedId() . "\n";
+} catch (Throwable $e) {
+    echo "ERROR: " . $e->getMessage() . "\n";
 }
