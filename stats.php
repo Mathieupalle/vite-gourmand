@@ -152,7 +152,7 @@ foreach ($menusAgg as $m) {
 
 <hr>
 
-<h2>Graphique : Comparaison commandes / Chiffre d'affaires</h2>
+<h2>Graphique : comparaison commande par menu / chiffre d'affaires</h2>
 <canvas id="chart" height="90"></canvas>
 
 <hr>
