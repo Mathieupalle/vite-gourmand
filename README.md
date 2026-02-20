@@ -1,52 +1,47 @@
 # Projet ECF entreprise "Vite & Gourmand"
-
 Application web développée dans le cadre de la formation Développeur Web et Web Mobile STUDI.
-
-Ce projet a pour objectif de concevoir une application web permettant à l’entreprise "Vite & Gourmand" de présenter ses menus et de faciliter la prise de commande en ligne.
-
----
-
-## Environnement de travail et justification des choix
-
-Le développement est réalisé sur un poste personnel à l’aide d’un serveur local de type XAMPP. Ce choix permet de disposer facilement d’un environnement complet regroupant Apache, PHP et MySQL, sans configuration complexe. L’utilisation d’un serveur local facilite les tests de l’application avant son déploiement en ligne.
-
-L’éditeur de code utilisé est Visual Studio Code, choisi pour sa légèreté, sa simplicité d’utilisation et la disponibilité de nombreuses extensions utiles au développement web.
-
-Le projet est mis à jour à l’aide de Git, ce qui permet de conserver un historique des modifications et de sécuriser l’avancement du développement. 
-Le dépôt est hébergé sur GitHub pour centraliser le code, le sauvegarder en ligne et faciliter le partage du projet.
-
-Ce fichier README.md a été rédigé pour documenter l’environnement de travail, les prérequis et les étapes nécessaires pour installer et lancer le projet en local, conformément aux bonnes pratiques de développement.
+Elle permet à l’entreprise "Vite & Gourmand" de présenter ses menus et de faciliter la prise de commande en ligne.
 
 ---
 
 ## Prérequis
-- Un navigateur web (Google Chrome)
-- Un serveur local (XAMPP)
+- macOS / Windows
+- XAMPP / MAMP installé
 - PHP
 - MySQL
+- Navigateur web (Google Chrome recommandé)
+- Git (pour cloner le projet)
 
 ---
 
-## Installation
-1. Télécharger le dépôt GitHub
-2. Placer le dossier du projet dans le dossier `htdocs` de XAMPP
-3. Lancer XAMPP et démarrer le serveur local (Apache) ainsi que la base de données (MySQL)
-4. Accéder au projet via l’adresse `http://localhost`
+## Récupération du projet
+Cloner le dépôt GitHub :
+git clone https://github.com/Mathieupalle/vite-gourmand.git
+
+Ou télécharger le dossier en format ZIP depuis GitHub.
 
 ---
 
-## Technologies utilisées
-- HTML / CSS / JavaScript : pour la structure, le style et l’interactivité de l’interface utilisateur  
-- PHP : pour la logique côté serveur et le traitement des données  
-- MySQL : base de données relationnelle prévue pour stocker les informations structurées  
-- MongoDB : base de données non relationnelle prévue pour la gestion des statistiques
+## Installation et déploiement en local
+1. Placer le dossier du projet dans le dossier htdocs de XAMPP :
+/Applications/XAMPP/htdocs/
+
+2. Lancer XAMPP
+
+3. Démarrer les modules :
+- Apache
+- MySQL
+
+4. Créer la base de données via phpMyAdmin (à venir)
+   
+5. Accéder au projet via le navigateur :
+http://localhost/vite-gourmand
 
 ---
 
-## Outils de développement
-- Visual Studio Code
-- Git
-- GitHub
+## Gestion de version
+Le projet est versionné avec Git et hébergé sur GitHub.
+La gestion des versions est effectuée via le terminal (Bash sous macOS).
 
 ---
 

@@ -1,0 +1,9 @@
+{
+  "name": "mathieu/vite-gourmand",
+  "description": "Projet final Vite Gourmand",
+  "license": "proprietary",
+  "require": {
+    "mongodb/mongodb": "~2.1.0",
+    "ext-mongodb": "^2.1"
+  }
+}
