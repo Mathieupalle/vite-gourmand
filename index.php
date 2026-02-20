@@ -103,7 +103,7 @@ $isStaff = ($role === 'employee' || $role === 'admin');
         <div class="row align-items-center g-4">
             <div class="col-lg-7">
         <span class="badge rounded-pill mb-3" style="background:#f7efe6;color:#553820;border:1px solid rgba(0,0,0,.06);">
-          Traiteur événementiel • Bordeaux • 25 ans d’expérience
+          Traiteur en ligne • Bordeaux • 25 ans d’expérience
         </span>
 
                 <h1 class="display-6 fw-semibold">Menus & prestations pour vos événements</h1>
@@ -123,18 +123,18 @@ $isStaff = ($role === 'employee' || $role === 'admin');
                         Connecté<?= isset($user['prenom']) ? ' en tant que ' . htmlspecialchars($user['prenom']) : '' ?>.
                     </div>
                 <?php else: ?>
-                    <div class="small text-muted mt-3">Astuce : crée un compte pour suivre tes commandes et laisser un avis.</div>
+                    <div class="small text-muted mt-3">Créez un compte pour suivre vos commandes et laisser un avis.</div>
                 <?php endif; ?>
             </div>
 
             <div class="col-lg-5">
                 <div class="p-4 bg-white shadow-sm" style="border:1px solid rgba(0,0,0,.08);border-radius:16px;">
-                    <div class="fw-semibold mb-2">Ce que vous obtenez</div>
+                    <div class="fw-semibold mb-2">Vite & Gourmand c'est :</div>
                     <ul class="text-muted small mb-0">
                         <li class="mb-2"><strong>Qualité :</strong> produits sélectionnés, préparation soignée.</li>
                         <li class="mb-2"><strong>Organisation :</strong> régimes & allergènes pris en compte.</li>
-                        <li class="mb-2"><strong>Logistique :</strong> livraison et matériel selon prestation.</li>
-                        <li><strong>Suivi :</strong> commande en ligne + statut et historique.</li>
+                        <li class="mb-2"><strong>Logistique :</strong> livraison rapide et matériel selon prestation.</li>
+                        <li><strong>Suivi :</strong> statut et historique de la commande.</li>
                     </ul>
                 </div>
             </div>
@@ -148,14 +148,14 @@ $isStaff = ($role === 'employee' || $role === 'admin');
         <div class="row g-3">
             <div class="col-md-4">
                 <div class="p-4 h-100" style="border:1px solid rgba(0,0,0,.08);border-radius:16px;">
-                    <div class="fw-semibold">Menus</div>
+                    <div class="fw-semibold">Nos menus</div>
                     <div class="text-muted small mt-2">Découvrez nos menus pour tous types d’événements.</div>
                     <a class="btn btn-sm btn-link px-0 mt-2" href="<?= $baseUrl ?>/menus.php">Explorer →</a>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="p-4 h-100" style="border:1px solid rgba(0,0,0,.08);border-radius:16px;">
-                    <div class="fw-semibold">Commande</div>
+                    <div class="fw-semibold">Commander</div>
                     <div class="text-muted small mt-2">Passez commande en ligne et suivez vos demandes.</div>
                     <?php if ($user): ?>
                         <a class="btn btn-sm btn-link px-0 mt-2" href="<?= $baseUrl ?>/mes-commandes.php">Voir mes commandes →</a>
@@ -234,7 +234,7 @@ $isStaff = ($role === 'employee' || $role === 'admin');
         <div class="row g-3 align-items-center">
             <div class="col-md-6">
                 <div class="fw-semibold">Vite & Gourmand</div>
-                <div class="text-muted small">Traiteur en ligne • Menus • Livraison • Prestations</div>
+                <div class="text-muted small">Traiteur en ligne</div>
             </div>
             <div class="col-md-6 text-md-end">
                 <div class="small">
