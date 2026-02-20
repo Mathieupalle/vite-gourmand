@@ -183,7 +183,7 @@ $stock = $menu['quantite_restante'];
             </nav>
             <h1 class="h3 mb-0"><?php echo htmlspecialchars($menu['titre']); ?></h1>
         </div>
-        <a class="btn btn-sm btn-outline-secondary" href="menus.php">← Retour aux menus</a>
+        <a class="btn btn-sm btn-outline-secondary" href="menus.php">Retour aux menus</a>
     </div>
 
     <div class="row g-4">
@@ -299,7 +299,7 @@ $stock = $menu['quantite_restante'];
     <!-- Plats -->
     <div class="card shadow-sm mt-4">
         <div class="card-header bg-white">
-            <h2 class="h6 mb-0">Plats inclus</h2>
+            <h2 class="h6 mb-0">Plats inclus dans le menu</h2>
         </div>
         <div class="card-body">
             <div class="accordion" id="platsAccordion">
@@ -342,23 +342,29 @@ $stock = $menu['quantite_restante'];
                     </div>
                 </div>
             </div>
-
-            <div class="small text-secondary mt-3">
-                Les allergènes sont affichés sous forme de badges (ou “Aucun allergène” si vide).
-            </div>
         </div>
     </div>
 </main>
 
-<footer class="py-4 border-top bg-white mt-4">
-    <div class="container small text-secondary d-flex flex-column flex-md-row justify-content-between gap-2">
-        <div>© <?php echo date('Y'); ?> Vite &amp; Gourmand</div>
-        <div>Mentions légales • CGV • Contact</div>
-    </div>
-</footer>
+        <footer class="border-top">
+            <div class="container py-4">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-6">
+                        <div class="fw-semibold">Vite & Gourmand</div>
+                        <div class="text-muted small">Traiteur en ligne</div>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <div class="small">
+                            <a class="link-secondary me-3" href="<?= $baseUrl ?>/mentions-legales.php">Mentions légales</a>
+                            <a class="link-secondary" href="<?= $baseUrl ?>/cgv.php">CGV</a>
+                        </div>
+                        <div class="text-muted small mt-2">© <?= date('Y'); ?> Vite & Gourmand</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>
