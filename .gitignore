@@ -1,2 +1,8 @@
 .DS_Store
 .DS_Store
+
+# Local
+config.local.php
+
+# Dependencies
+vendor/
