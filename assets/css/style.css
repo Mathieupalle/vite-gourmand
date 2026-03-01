@@ -1,6 +1,7 @@
 :root{
     --brand:#8b5e34;
     --brand-2:#f7efe6;
+    --brand-3:#553820;
 }
 
 .brand-dot{
@@ -13,6 +14,12 @@
 .hero{
     background: linear-gradient(180deg, var(--brand-2), #fff);
     border-bottom: 1px solid rgba(0,0,0,.06);
+}
+
+.badge.badge-brand{
+    background-color: var(--brand-2);
+    color: var(--brand-3);
+    border: 1px solid rgba(0,0,0,.06);
 }
 
 .btn-primary{

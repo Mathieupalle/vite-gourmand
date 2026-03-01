@@ -8,7 +8,7 @@ CREATE TABLE role (
 CREATE TABLE utilisateur (
   utilisateur_id INT AUTO_INCREMENT PRIMARY KEY,
   email VARCHAR(255) NOT NULL UNIQUE,
-  password_hash VARCHAR(255) NOT NULL,   -- hash (même si le MCD dit "password", on stocke un hash)
+  password VARCHAR(255) NOT NULL,
   prenom VARCHAR(50) NULL,
   telephone VARCHAR(50) NULL,
   ville VARCHAR(50) NULL,
@@ -51,7 +51,7 @@ CREATE TABLE plat (
   photo BLOB NULL
 );
 
--- MENU <-> PLAT (propose) (N..N)
+-- MENU <-> PLAT (N..N)
 CREATE TABLE menu_plat (
   menu_id INT NOT NULL,
   plat_id INT NOT NULL,
@@ -66,7 +66,7 @@ CREATE TABLE allergene (
   libelle VARCHAR(50) NOT NULL UNIQUE
 );
 
--- PLAT <-> ALLERGENE (contient) (N..N)
+-- PLAT <-> ALLERGENE (N..N)
 CREATE TABLE plat_allergene (
   plat_id INT NOT NULL,
   allergene_id INT NOT NULL,
@@ -83,7 +83,7 @@ CREATE TABLE horaire (
   heure_fermeture VARCHAR(50) NOT NULL
 );
 
--- PLAT <-> HORAIRE (contient) (N..N)
+-- PLAT <-> HORAIRE (N..N)
 CREATE TABLE plat_horaire (
   plat_id INT NOT NULL,
   horaire_id INT NOT NULL,
@@ -94,7 +94,8 @@ CREATE TABLE plat_horaire (
 
 -- COMMANDE
 CREATE TABLE commande (
-  num_commande VARCHAR(50) PRIMARY KEY,
+  commande_id INT AUTO_INCREMENT PRIMARY KEY,
+  numero_commande VARCHAR(50) NOT NULL UNIQUE,
   date_commande DATE NOT NULL,
   date_prestation DATE NOT NULL,
   heure_livraison VARCHAR(50) NULL,
@@ -108,6 +109,19 @@ CREATE TABLE commande (
   menu_id INT NOT NULL,
   CONSTRAINT fk_commande_utilisateur FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(utilisateur_id),
   CONSTRAINT fk_commande_menu FOREIGN KEY (menu_id) REFERENCES menu(menu_id)
+);
+
+-- COMMANDE_SUIVI (historique des statuts)
+CREATE TABLE commande_suivi (
+  suivi_id INT AUTO_INCREMENT PRIMARY KEY,
+  commande_id INT NOT NULL,
+  statut VARCHAR(50) NOT NULL,
+  date_modif DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  mode_contact VARCHAR(50) NULL,
+  motif TEXT NULL,
+  CONSTRAINT fk_commande_suivi_commande
+    FOREIGN KEY (commande_id) REFERENCES commande(commande_id)
+    ON DELETE CASCADE
 );
 
 -- AVIS

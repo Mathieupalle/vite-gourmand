@@ -51,7 +51,7 @@ $isStaff = ($role === 'employee' || $role === 'admin');
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
     <div class="container">
         <a class="navbar-brand fw-semibold" href="<?= $baseUrl ?>/index.php">
-            <span class="me-2" style="display:inline-block;width:10px;height:10px;border-radius:999px;background:#8b5e34;"></span>
+            <span class="me-2 brand-dot"></span>
             Vite & Gourmand
         </a>
 
@@ -89,7 +89,7 @@ $isStaff = ($role === 'employee' || $role === 'admin');
                         <a class="btn btn-outline-secondary btn-sm px-3" href="<?= $baseUrl ?>/login.php">Connexion</a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn btn-primary btn-sm px-3" style="background:#8b5e34;border-color:#8b5e34;"
+                        <a class="btn btn-primary btn-sm px-3"
                            href="<?= $baseUrl ?>/register.php">Créer un compte</a>
                     </li>
                 <?php endif; ?>
@@ -98,13 +98,14 @@ $isStaff = ($role === 'employee' || $role === 'admin');
     </div>
 </nav>
 
-<header class="py-5" style="background:linear-gradient(180deg,#f7efe6,#fff);border-bottom:1px solid rgba(0,0,0,.06);">
+<header class="py-5 hero">
     <div class="container py-2">
         <div class="row align-items-center g-4">
             <div class="col-lg-7">
-        <span class="badge rounded-pill mb-3" style="background:#f7efe6;color:#553820;border:1px solid rgba(0,0,0,.06);">
-          Traiteur en ligne • Bordeaux • 25 ans d’expérience
-        </span>
+        <span class="badge rounded-pill mb-3"
+              style="background:#f7efe6; color:#553820; border:1px solid rgba(0,0,0,.06);">
+  Traiteur en ligne • Bordeaux • 25 ans d’expérience
+</span>
 
                 <h1 class="display-6 fw-semibold">Menus & prestations pour vos événements</h1>
                 <p class="text-muted mt-3 mb-4">
@@ -113,7 +114,7 @@ $isStaff = ($role === 'employee' || $role === 'admin');
                 </p>
 
                 <div class="d-flex gap-2 flex-wrap">
-                    <a class="btn btn-primary px-4" style="background:#8b5e34;border-color:#8b5e34;"
+                    <a class="btn btn-primary px-4"
                        href="<?= $baseUrl ?>/menus.php">Voir les menus</a>
                     <a class="btn btn-outline-secondary px-4" href="<?= $baseUrl ?>/contact.php">Demander un devis</a>
                 </div>
@@ -186,7 +187,7 @@ $isStaff = ($role === 'employee' || $role === 'admin');
                     <ul class="list-group">
                         <?php foreach ($avisValides as $a): ?>
                             <li class="list-group-item d-flex gap-3 align-items-start">
-                <span class="badge rounded-pill mt-1" style="background:#f7efe6;color:#553820;border:1px solid rgba(0,0,0,.06);">
+                <span class="badge rounded-pill mt-1 badge-brand">
                   <?= (int)$a['note']; ?>/5
                 </span>
                                 <div>
