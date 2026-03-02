@@ -35,7 +35,7 @@ Ou télécharger le dossier en format ZIP depuis GitHub.
 4. Créer la base de données via phpMyAdmin grâce à sql/schema.sql.
    
 5. Accéder au projet via le navigateur :
-http://localhost/vite-gourmand
+http://localhost/vite-gourmand/public/
 
 ---
 
