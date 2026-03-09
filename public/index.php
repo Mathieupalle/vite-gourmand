@@ -65,7 +65,7 @@ $routes = [
 $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 $base = parse_url(BASE_URL, PHP_URL_PATH) ?: '/';
 
-$path = '/' . trim(str_replace($base, '', (string)$uri), '/');
+$path = '/' . ltrim((string)substr($uri, strlen($base)), '/');
 if ($path === '/') {
     $path = '/home';
 }
