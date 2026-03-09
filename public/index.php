@@ -62,10 +62,10 @@ $routes = [
 ];
 
 // Récupérer le chemin demandé depuis l'URL
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 $base = parse_url(BASE_URL, PHP_URL_PATH) ?: '/';
 
-$path = '/' . trim(str_replace($base, '', $uri), '/');
+$path = '/' . trim(str_replace($base, '', (string)$uri), '/');
 if ($path === '/') {
     $path = '/home';
 }
@@ -77,7 +77,6 @@ if (!isset($routes[$path])) {
     http_response_code(404);
     die("Page introuvable.");
 }
-[$controllerClass, $method] = $routes[$path];
 
 // Récupérer le controller et la méthode
 [$controllerClass, $method] = $routes[$path];
