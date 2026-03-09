@@ -63,13 +63,21 @@ $routes = [
 
 // Récupérer le chemin demandé depuis l'URL
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$base = rtrim(BASE_URL, '/');
-$pathInfo = trim(substr((string)$uri, strlen((string)$base)), '/');
-$parts = explode('/', $pathInfo);
+$base = parse_url(BASE_URL, PHP_URL_PATH) ?: '/';
 
-$path = '/' . ($parts[0] ?? 'home'); // route principale
+$path = '/' . trim(str_replace($base, '', $uri), '/');
+if ($path === '/') {
+    $path = '/home';
+}
+
+$parts = explode('/', trim($path, '/'));
 $id = isset($parts[1]) ? (int)$parts[1] : ($_GET['menu_id'] ?? null);
 
+if (!isset($routes[$path])) {
+    http_response_code(404);
+    die("Page introuvable.");
+}
+[$controllerClass, $method] = $routes[$path];
 
 // Récupérer le controller et la méthode
 [$controllerClass, $method] = $routes[$path];
