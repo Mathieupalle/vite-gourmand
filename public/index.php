@@ -6,10 +6,10 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $configLocal = __DIR__ . '/../config.local.php';
 $configProd = __DIR__ . '/../config.php';
 
-if (file_exists($configLocal)) {
-    require $configLocal;
+if (file_exists(__DIR__ . '/../config.local.php')) {
+    require_once __DIR__ . '/../config.local.php';
 } else {
-    require $configProd;
+    require_once __DIR__ . '/../config.php';
 }
 
 use App\Core\View;
@@ -64,7 +64,7 @@ $routes = [
 // Récupérer le chemin demandé depuis l'URL
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $base = rtrim(BASE_URL, '/');
-$pathInfo = trim(substr($uri, strlen($base)), '/');
+$pathInfo = trim(substr((string)$uri, strlen((string)$base)), '/');
 $parts = explode('/', $pathInfo);
 
 $path = '/' . ($parts[0] ?? 'home'); // route principale
