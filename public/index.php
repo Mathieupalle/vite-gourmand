@@ -62,25 +62,30 @@ $routes = [
 ];
 
 // Récupérer le chemin demandé depuis l'URL
-$uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH); // ex: /menus
-$basePath = parse_url(BASE_URL, PHP_URL_PATH) ?: '/';           // ex: '/'
+$uri = (string)parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+$base = (string)(parse_url(BASE_URL, PHP_URL_PATH) ?: '/');
 
-// Supprimer le basePath du début de l'URI si présent
-if (str_starts_with($uri, $basePath)) {
-    $relativePath = substr($uri, strlen($basePath));
-} else {
-    $relativePath = $uri;
+// Retirer le base path
+$relativePath = substr($uri, strlen($base));
+$path = '/' . ltrim((string)$relativePath, '/');
+
+// Route par défaut
+if ($path === '/' || $path === '') {
+    $path = '/home';
 }
 
-// Normaliser le path (supprimer slash en trop)
-$relativePath = trim($relativePath, '/');
-$path = '/' . ($relativePath ?: 'home');  // si vide → /home
-
-// Récupérer les parties du path pour les IDs éventuels
-$parts = explode('/', $relativePath);
+$parts = explode('/', trim($path, '/'));
 $id = isset($parts[1]) ? (int)$parts[1] : ($_GET['menu_id'] ?? null);
 
-// Vérifier que la route existe
+var_dump([
+    'uri' => $_SERVER['REQUEST_URI'] ?? null,
+    'base_url' => BASE_URL,
+    'path' => $path,
+    'routes' => array_keys($routes),
+]);
+die();
+
+// Vérifier si la route existe
 if (!isset($routes[$path])) {
     http_response_code(404);
     die("Page introuvable.");
