@@ -62,10 +62,14 @@ $routes = [
 ];
 
 // Récupérer le chemin demandé depuis l'URL
-$uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
-$base = parse_url(BASE_URL, PHP_URL_PATH) ?: '/';
+$uriRaw = $_SERVER['REQUEST_URI'] ?? '/';
+$uri = parse_url((string)$uriRaw, PHP_URL_PATH) ?: '/';
+$base = parse_url((string)BASE_URL, PHP_URL_PATH) ?: '/';
 
-$path = '/' . ltrim((string)substr($uri, strlen($base)), '/');
+// Supprime le base du début et nettoie les slashs
+$path = '/' . ltrim(substr($uri, strlen($base)), '/');
+
+// Route par défaut
 if ($path === '/') {
     $path = '/home';
 }
@@ -73,6 +77,7 @@ if ($path === '/') {
 $parts = explode('/', trim($path, '/'));
 $id = isset($parts[1]) ? (int)$parts[1] : ($_GET['menu_id'] ?? null);
 
+// Vérifie si la route existe
 if (!isset($routes[$path])) {
     http_response_code(404);
     die("Page introuvable.");
