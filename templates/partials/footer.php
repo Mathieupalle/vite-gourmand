@@ -7,8 +7,8 @@
             </div>
             <div class="col-md-6 text-md-end">
                 <div class="small">
-                    <a class="link-secondary me-3" href="<?= BASE_URL ?>/mentionsLegales.php">Mentions légales</a>
-                    <a class="link-secondary" href="<?= BASE_URL ?>/cgv.php">CGV</a>
+                    <a class="link-secondary me-3" href="<?= BASE_URL ?>/mentionsLegales">Mentions légales</a>
+                    <a class="link-secondary" href="<?= BASE_URL ?>/cgv">CGV</a>
                 </div>
                 <div class="text-muted small mt-2">© <?= date('Y'); ?> Vite & Gourmand</div>
             </div>

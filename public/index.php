@@ -1,8 +1,16 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../config.local.php';
 require_once __DIR__ . '/../vendor/autoload.php';
+
+$configLocal = __DIR__ . '/../config.local.php';
+$configProd = __DIR__ . '/../config.php';
+
+if (file_exists($configLocal)) {
+    require $configLocal;
+} else {
+    require $configProd;
+}
 
 use App\Core\View;
 use App\Infrastructure\Database;
