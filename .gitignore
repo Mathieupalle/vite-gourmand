@@ -1,7 +1,9 @@
+# macOS
 .DS_Store
-.DS_Store
+
+# Local config / secrets
 config.local.php
 .env
-vendor/
-.DS_Store
-vendor/
+
+# Dependencies
+/vendor/

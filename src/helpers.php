@@ -1,16 +1,18 @@
 <?php
-function base_url(): string
-{
-    // Heroku fournit l'hostname via $_SERVER['HTTP_HOST'] sur les requêtes web
-    $host = $_SERVER['HTTP_HOST'] ?? '';
-    $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
-    $scheme = $https ? 'https' : 'http';
+declare(strict_types=1);
 
-    // Si on est dans /vite-gourmand en local, garder le path, sinon vider en prod
-    $path = '';
-    if ($host === 'localhost' || str_contains($host, '127.0.0.1')) {
-        $path = '/vite-gourmand';
+if (!function_exists('e')) {
+    function e(?string $value): string
+    {
+        return htmlspecialchars((string)$value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
+}
 
-    return $scheme . '://' . $host . $path;
+if (!function_exists('redirect')) {
+    function redirect(string $path): void
+    {
+        if ($path !== '' && $path[0] !== '/') $path = '/' . $path;
+        header('Location: ' . base_url() . $path);
+        exit;
+    }
 }
