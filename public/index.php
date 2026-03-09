@@ -62,17 +62,17 @@ $routes = [
 ];
 
 // Récupérer le chemin demandé depuis l'URL
-$uri = $_SERVER['REQUEST_URI'] ?? '/';
-$basePath = parse_url(BASE_URL, PHP_URL_PATH) ?: '/';
+$uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+$base = parse_url(BASE_URL, PHP_URL_PATH) ?: '/';
 
-// Supprime les doublons de slash et enlève le base path
-$relativePath = preg_replace('#/+#', '/', substr($uri, strlen($basePath)));
+// Retirer le base path (en string)
+$relativePath = substr((string)$uri, strlen((string)$base));
 
-// Normalisation : pas de slash en début/fin
-$relativePath = trim($relativePath, '/');
-
-// Route par défaut
-$path = '/' . ($relativePath ?: 'home');
+// Normalisation
+$path = '/' . ltrim((string)$relativePath, '/');
+if ($path === '/' || $path === '') {
+    $path = '/home';
+}
 
 $parts = explode('/', trim($path, '/'));
 $id = isset($parts[1]) ? (int)$parts[1] : ($_GET['menu_id'] ?? null);
