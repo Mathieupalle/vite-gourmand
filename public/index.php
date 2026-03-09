@@ -62,16 +62,20 @@ $routes = [
 ];
 
 // Récupérer le chemin demandé depuis l'URL
-$uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
-$base = parse_url(BASE_URL, PHP_URL_PATH) ?: '/';
+$uri = (string)parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+$base = (string)(parse_url(BASE_URL, PHP_URL_PATH) ?: '/');
 
-// Supprimer le base URL et éviter les doubles slash
-$path = '/' . ltrim((string)substr($uri, strlen($base)), '/');
-$path = $path === '/' ? '/home' : $path;
+// Retirer le base path
+$relativePath = substr($uri, strlen($base));
+$path = '/' . ltrim((string)$relativePath, '/');
 
-// Récupérer un ID si présent dans l'URL ou $_GET
+// Route par défaut
+if ($path === '/' || $path === '') {
+    $path = '/home';
+}
+
 $parts = explode('/', trim($path, '/'));
-$id = isset($parts[1]) ? (int)$parts[1] : ($_GET['menu_id'] ?? ($_GET['id'] ?? null));
+$id = isset($parts[1]) ? (int)$parts[1] : ($_GET['menu_id'] ?? null);
 
 // Vérifier si la route existe
 if (!isset($routes[$path])) {
