@@ -25,9 +25,11 @@ En local (macOS / XAMPP)
       define('DB_NAME', 'vite_gourmand');
       define('DB_USER', 'siteweb');
       define('DB_PASS', '****************');
-      define('MONGODB_URI', 'mongodb+srv://vitegourmand:ViteGourmand12345@cluster0.ptlv7eh.mongodb.net/?appName=Cluster0&tlsAllowInvalidCertificates=true');
+      define('MONGODB_URI', 'mongodb+srv://vitegourmand:*****************@cluster0.ptlv7eh.mongodb.net/?appName=Cluster0&tlsAllowInvalidCertificates=true');
 
 6. Démarrer Apache et MySQL via XAMPP.
+
+---
 
 En production (Heroku)
 
@@ -40,5 +42,5 @@ En production (Heroku)
       - DB_PASS : ****************
       - DB_PORT : 3306
       - DB_USER : x9fu5b5l9sd09tzc
-      - MONGODB_URI : mongodb+srv://vitegourmand:ViteGourmand12345@cluster0.ptlv7eh.mongodb.net/?appName=Cluster0&authSource=admin
+      - MONGODB_URI : mongodb+srv://vitegourmand:*****************@cluster0.ptlv7eh.mongodb.net/?appName=Cluster0&authSource=admin
       - JAWSDB_URL : mysql://x9fu5b5l9sd09tzc:****************@d1kb8x1fu8rhcnej.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/kxdo1g9nh3n1jekt
