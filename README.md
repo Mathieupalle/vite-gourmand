@@ -24,7 +24,7 @@ En local (macOS / XAMPP)
       define('DB_HOST', '127.0.0.1');
       define('DB_NAME', 'vite_gourmand');
       define('DB_USER', 'siteweb');
-      define('DB_PASS', '!Cm51]IOX1HfAiix');
+      define('DB_PASS', '****************');
       define('MONGODB_URI', 'mongodb+srv://vitegourmand:ViteGourmand12345@cluster0.ptlv7eh.mongodb.net/?appName=Cluster0&tlsAllowInvalidCertificates=true');
 
 6. Démarrer Apache et MySQL via XAMPP.
