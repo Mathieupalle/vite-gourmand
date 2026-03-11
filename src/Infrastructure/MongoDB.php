@@ -24,7 +24,7 @@ final class MongoDB
         $driverOpts = [];
 
         // Hack TLS local
-        if (PHP_SAPI !== 'cli' && (($_SERVER['HTTP_HOST'] ?? '') === 'localhost')) {
+        if (PHP_SAPI !== 'cli' && (($_SERVER['HTTP_HOST'] ?? '') === '127.0.0.1')) {
             $driverOpts['tlsCAFile'] = '/Applications/XAMPP/xamppfiles/etc/ssl/cacert.pem';
         }
 

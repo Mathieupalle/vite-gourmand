@@ -5,7 +5,7 @@
 <?php require TEMPLATES_PATH . '/partials/header.php'; ?>
 
 <h1>Conditions Générales de Vente</h1>
-<p><a href="<?= BASE_URL ?>/home">← Retour accueil</a></p>
+<p><a href="<?= BASE_URL ?>/home">Retour accueil</a></p>
 
 <h2>Commandes</h2>
 <p>

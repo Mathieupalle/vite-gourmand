@@ -6,7 +6,7 @@
 <?php require TEMPLATES_PATH . '/partials/header.php'; ?>
 
 <h1>Espace gestion</h1>
-<p><a href="<?= BASE_URL ?>/home">← Retour accueil</a></p>
+<p><a href="<?= BASE_URL ?>/home">Retour accueil</a></p>
 
 <p>
     Connecté :
@@ -34,7 +34,7 @@
     <ul>
         <li><a href="<?= BASE_URL ?>/employeCreate">Créer un compte employé</a></li>
         <li><a href="<?= BASE_URL ?>/employeManage">Gérer les comptes employés</a></li>
-        <br><br>
+        <br>
         <li><a href="<?= BASE_URL ?>/stats">Statistiques (MongoDB)</a></li>
     </ul>
 

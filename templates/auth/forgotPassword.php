@@ -5,7 +5,7 @@
 <?php require TEMPLATES_PATH . '/partials/header.php'; ?>
 
 <h1>Mot de passe oublié</h1>
-<p><a href="<?= BASE_URL ?>/login">← Retour connexion</a></p>
+<p><a href="<?= BASE_URL ?>/login">Retour connexion</a></p>
 
 <?php if (!empty($success)): ?>
     <p style="color:green"><?= htmlspecialchars($success) ?></p>

@@ -10,7 +10,7 @@
 <h1>Modifier un plat</h1>
 
 <p>
-    <a href="<?= BASE_URL ?>/platManage">← Retour</a>
+    <a href="<?= BASE_URL ?>/platManage">Retour</a>
 </p>
 
 <?php if ($success): ?>

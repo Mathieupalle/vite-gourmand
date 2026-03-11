@@ -46,7 +46,7 @@
 </form>
 
 <p><a href="<?= BASE_URL ?>/home">Accueil</a></p>
-<p><a href="<?= BASE_URL ?>/admin">← Retour à l’espace Gestion</a></p>
+<p><a href="<?= BASE_URL ?>/admin">Retour</a></p>
 
 <?php require TEMPLATES_PATH . '/partials/footer.php'; ?>
 <?php require TEMPLATES_PATH . '/partials/scripts.php'; ?>

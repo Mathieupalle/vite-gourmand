@@ -12,14 +12,14 @@
     <?php endforeach; ?>
 <?php endif; ?>
 
-<form method="post">
+<form method="post" action="<?= BASE_URL ?>/login">
     <input type="email" name="email" placeholder="Email" required><br><br>
     <input type="password" name="password" placeholder="Mot de passe" required><br><br>
     <button type="submit">Se connecter</button>
 </form>
 
 <p><a href="<?= BASE_URL ?>/forgotPassword">Mot de passe oublié ?</a></p>
-<p><a href="<?= BASE_URL ?>/home">← Retour accueil</a></p>
+<p><a href="<?= BASE_URL ?>/home">Retour accueil</a></p>
 
 <?php require TEMPLATES_PATH . '/partials/footer.php'; ?>
 <?php require TEMPLATES_PATH . '/partials/scripts.php'; ?>

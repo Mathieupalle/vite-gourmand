@@ -1,6 +1,10 @@
 <?php
 declare(strict_types=1);
 
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
 $configLocal = __DIR__ . '/../config.local.php';
@@ -72,6 +76,20 @@ $relativePath = substr((string)$uri, strlen((string)$base));
 $path = '/' . ltrim((string)$relativePath, '/');
 if ($path === '/' || $path === '') {
     $path = '/home';
+}
+
+// --- ROUTE API RevenusStats ---
+if ($path === '/api/revenusStats') {
+    // Vérifie que l'utilisateur est connecté et admin (optionnel selon ton projet)
+    if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+        http_response_code(401);
+        echo json_encode(['error' => 'Non autorisé']);
+        exit;
+    }
+
+    // Inclure l'ancien fichier API
+    require_once __DIR__ . '/api/revenusStats.php';
+    exit;
 }
 
 $parts = explode('/', trim($path, '/'));

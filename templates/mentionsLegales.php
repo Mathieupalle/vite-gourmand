@@ -6,7 +6,7 @@
 <?php require TEMPLATES_PATH . '/partials/header.php'; ?>
 
 <h1>Mentions légales</h1>
-<p><a href="<?= BASE_URL ?>/home">← Retour accueil</a></p>
+<p><a href="<?= BASE_URL ?>/home">Retour accueil</a></p>
 
 <p>
     Site réalisé dans le cadre d’un projet pédagogique (ECF STUDI).

@@ -19,38 +19,38 @@ final class AuthController
         $this->service = new UserService(new UserRepository($pdo));
     }
 
-    // Affiche le formulaire de connexion
+    // Formulaire de connexion + traitement
     public function login(): void
     {
         if (Auth::isLoggedIn()) {
             View::redirect('/home');
         }
 
-        View::render('auth/login', ['errors' => []]);
-    }
-
-    // Traitement du login
-    public function handleLogin(array $post): void
-    {
         $errors = [];
 
-        try {
-            $sessionUser = $this->service->login(
-                (string)($post['email'] ?? ''),
-                (string)($post['password'] ?? '')
-            );
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                $sessionUser = $this->service->login(
+                    (string)($_POST['email'] ?? ''),
+                    (string)($_POST['password'] ?? '')
+                );
 
-            session_start();
-            $_SESSION['user'] = $sessionUser;
+                if (session_status() !== PHP_SESSION_ACTIVE) {
+                    session_start();
+                }
 
-            View::redirect('/home');
-        } catch (\Throwable $e) {
-            $errors[] = $e->getMessage();
-            View::render('auth/login', ['errors' => $errors]);
+                $_SESSION['user'] = $sessionUser;
+                View::redirect('/home');
+                return;
+
+            } catch (\Throwable $e) {
+                $errors[] = $e->getMessage();
+            }
         }
+
+        View::render('auth/login', ['errors' => $errors]);
     }
 
-    // Déconnexion
     public function logout(): void
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {

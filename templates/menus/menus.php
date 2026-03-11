@@ -18,7 +18,7 @@
 
 <main class="container my-4">
     <div class="row g-4">
-        <!-- Filters -->
+
         <aside class="col-12 col-lg-4">
             <div class="card shadow-sm">
                 <div class="card-header bg-white">
@@ -83,7 +83,6 @@
             </div>
         </aside>
 
-        <!-- Results -->
         <section class="col-12 col-lg-8">
             <div class="card shadow-sm">
                 <div class="card-header bg-white">

@@ -4,9 +4,13 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Infrastructure\Database;
+use App\Entity\CommandeStatus;
+use App\Service\CommandeService;
 use App\Repository\CommandeRepository;
 use App\Security\Auth;
 use App\Core\View;
+use App\Migration\MigrateOrders;
+use MongoDB\Client as MongoClient;
 use DateTimeImmutable;
 use MongoDB\BSON\UTCDateTime;
 use Throwable;
@@ -31,7 +35,7 @@ class CommandeController
 
         $userId = (int)($_SESSION['user']['utilisateur_id'] ?? $_SESSION['user']['id'] ?? 0);
         if ($userId <= 0) {
-            $this->redirect('/login.php');
+            $this->redirect('/login');
         }
 
         $menuId = (int)($_GET['menu_id'] ?? 0);
@@ -167,7 +171,7 @@ class CommandeController
         if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 
         $userId = (int)($_SESSION['user']['utilisateur_id'] ?? $_SESSION['user']['id'] ?? 0);
-        if ($userId <= 0) $this->redirect('/login.php');
+        if ($userId <= 0) $this->redirect('/login');
 
         $commandeId = (int)($_GET['id'] ?? 0);
         if ($commandeId <= 0) {
@@ -196,7 +200,7 @@ class CommandeController
 
         try {
             $service->changerStatut($commandeId, CommandeStatus::ANNULEE, 'client', null, null);
-            $this->redirect('/mesCommandes.php');
+            $this->redirect('/mesCommandes');
         } catch (Throwable $e) {
             http_response_code(500);
             echo "Erreur : " . htmlspecialchars($e->getMessage());
@@ -225,28 +229,31 @@ class CommandeController
         $service = new CommandeService($pdo, $repo);
 
         try {
+            // Création de la commande dans MySQL
             $result = $service->creerCommandeDepuisPost($userId, $_POST);
 
-            $mongoUri = getenv('MONGODB_URI');
+            // 🔹 Migration automatique vers MongoDB
+            $mongoUri = getenv('MONGODB_URI'); // défini dans ton config
             if ($mongoUri) {
                 try {
                     $mongo = new MongoClient($mongoUri);
-                    $col = $mongo->selectCollection('vitegourmand', 'orders_analytics');
 
-                    $col->insertOne([
-                        'sqlCommandeId' => (int)$result['commandeId'],
-                        'menuTitre'     => (string)$result['menuTitre'],
-                        'totalFinal'    => (float)$result['totalFinal'],
-                        'createdAt'     => new UTCDateTime((int) round(microtime(true) * 1000)),
-                        'statut'        => (string)$result['statut'],
-                    ]);
-                } catch (Throwable $e) {
+                    // Utiliser la classe de migration
+                    $migrator = new MigrateOrders($pdo, $mongo);
+                    $inserted = $migrator->migrateNewOrders();
+
+                    // Optionnel : log pour debug
+                    // error_log("MongoDB migration : $inserted commandes insérées.");
+
+                } catch (\Throwable $e) {
+                    // Pas d'erreur critique : la commande est déjà dans MySQL
+                    error_log("Erreur migration MongoDB : " . $e->getMessage());
                 }
             }
 
-            $this->redirect('/mesCommandes.php');
+            $this->redirect('/mesCommandes');
 
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             http_response_code(500);
             echo "Erreur : " . htmlspecialchars($e->getMessage());
         }
@@ -259,7 +266,7 @@ class CommandeController
         if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 
         $userId = (int)($_SESSION['user']['utilisateur_id'] ?? $_SESSION['user']['id'] ?? 0);
-        if ($userId <= 0) $this->redirect('/login.php');
+        if ($userId <= 0) $this->redirect('/login');
 
         $commandeId = (int)($_GET['id'] ?? 0);
         if ($commandeId <= 0) {
@@ -304,7 +311,53 @@ class CommandeController
     }
 
     private function processPost(array &$c, int $userId, array &$errors, \PDO $pdo): void
-    {}
+    {
+        try {
+            // Récupérer les données du POST
+            $datePrestation   = trim((string)($_POST['date_prestation'] ?? ''));
+            $adressePrestation = trim((string)($_POST['adresse_prestation'] ?? ''));
+            $villePrestation  = trim((string)($_POST['ville_prestation'] ?? ''));
+
+            $dateLivraison    = trim((string)($_POST['date_livraison'] ?? ''));
+            $heureLivraison   = trim((string)($_POST['heure_livraison'] ?? ''));
+            $adresseLivraison = trim((string)($_POST['adresse_livraison'] ?? ''));
+            $villeLivraison   = trim((string)($_POST['ville_livraison'] ?? ''));
+            $distanceKm       = (float)($_POST['distance_km'] ?? 0);
+
+            $nombrePersonne   = (int)($_POST['nombre_personne'] ?? $c['nombre_personne']);
+
+            // Validation simple
+            if ($datePrestation === '' || $adressePrestation === '' || $villePrestation === '') {
+                throw new \Exception("Informations prestation invalides.");
+            }
+            if ($dateLivraison === '' || $heureLivraison === '' || $adresseLivraison === '' || $villeLivraison === '') {
+                throw new \Exception("Informations livraison invalides.");
+            }
+            if ($nombrePersonne < (int)$c['nombre_personne_minimum']) {
+                throw new \Exception("Nombre de personnes trop faible.");
+            }
+
+            // Mettre à jour la commande
+            $stmt = $pdo->prepare("
+            UPDATE commande
+            SET date_prestation = ?, adresse_prestation = ?, ville_prestation = ?,
+                date_livraison = ?, heure_livraison = ?, adresse_livraison = ?, ville_livraison = ?, distance_km = ?, nombre_personne = ?
+            WHERE commande_id = ? AND utilisateur_id = ?
+        ");
+            $stmt->execute([
+                $datePrestation, $adressePrestation, $villePrestation,
+                $dateLivraison, $heureLivraison, $adresseLivraison, $villeLivraison, $distanceKm, $nombrePersonne,
+                $c['commande_id'], $userId
+            ]);
+
+            // Redirection vers mesCommandes après succès
+            header('Location: ' . rtrim(BASE_URL, '/') . '/mesCommandes');
+            exit;
+
+        } catch (\Throwable $e) {
+            $errors[] = $e->getMessage();
+        }
+    }
 
     // Mes commandes (client)
     public function mesCommandes(): void
@@ -347,5 +400,64 @@ class CommandeController
             'suivisByCommande' => $suivisByCommande,
             'statusLabels' => $statusLabels,
         ]);
+    }
+
+    // Mise à jour du statut de la commande
+    public function commandeUpdateStatut(): void
+    {
+        Auth::requireRole(['employee', 'admin']);
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            exit("Méthode non autorisée.");
+        }
+
+        $commandeId = (int)($_POST['commande_id'] ?? 0);
+        $statut = trim((string)($_POST['statut'] ?? ''));
+        $modeContact = trim((string)($_POST['mode_contact'] ?? ''));
+        $motif = trim((string)($_POST['motif'] ?? ''));
+
+        if ($commandeId <= 0 || $statut === '') {
+            http_response_code(400);
+            exit("Paramètres invalides.");
+        }
+
+        // règle métier obligatoire pour les employés
+
+        if ($modeContact === '') {
+            http_response_code(400);
+            exit("Vous devez préciser le mode de contact.");
+        }
+
+        if ($motif === '') {
+            http_response_code(400);
+            exit("Vous devez préciser le motif.");
+        }
+
+        if (!in_array($modeContact, ['telephone', 'email'], true)) {
+            http_response_code(400);
+            exit("Type de contact invalide.");
+        }
+
+        $pdo = Database::getConnection();
+        $repo = new CommandeRepository($pdo);
+        $service = new CommandeService($pdo, $repo);
+
+        try {
+            $service->changerStatut(
+                $commandeId,
+                $statut,
+                'employee',
+                $modeContact,
+                $motif
+            );
+
+            header('Location: ' . rtrim(BASE_URL, '/') . '/commandeManage');
+            exit;
+
+        } catch (\Throwable $e) {
+            http_response_code(500);
+            echo "Erreur : " . htmlspecialchars($e->getMessage());
+        }
     }
 }

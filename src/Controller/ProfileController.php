@@ -43,7 +43,6 @@ class ProfileController
                 $fresh = $service->updateProfile($userId, $_POST);
                 $success = "Profil mis à jour.";
 
-
                 $_SESSION['user']['nom'] = $fresh['nom'];
                 $_SESSION['user']['prenom'] = $fresh['prenom'];
                 $_SESSION['user']['telephone'] = $fresh['telephone'];
@@ -56,6 +55,10 @@ class ProfileController
             }
         }
 
-        View::render('profile');
+        View::render('profile', [
+            'userDb' => $userDb,
+            'errors' => $errors,
+            'success' => $success
+        ]);
     }
 }

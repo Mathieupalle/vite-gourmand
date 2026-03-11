@@ -12,6 +12,8 @@
 <p>
     <a href="<?= BASE_URL ?>/home">Accueil</a> |
     <a href="<?= BASE_URL ?>/platCreate">Créer un plat</a>
+    <br>
+    <a href="<?= BASE_URL ?>/admin">Retour</a>
 </p>
 
 <?php if (!$plats): ?>

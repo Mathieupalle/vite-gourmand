@@ -10,7 +10,8 @@
 <h1>Laisser un avis</h1>
 
 <p>
-    <a href="<?= BASE_URL ?>/mesCommandes">← Retour à mes commandes</a>
+    <a href="<?= BASE_URL ?>/home">Accueil</a>
+    <a href="<?= BASE_URL ?>/mesCommandes">Retour</a>
 </p>
 
 <p>

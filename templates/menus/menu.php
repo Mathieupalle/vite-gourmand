@@ -21,7 +21,7 @@
     </div>
 
     <div class="row g-4">
-        <!-- Galerie -->
+
         <div class="col-12 col-lg-6">
             <div class="card shadow-sm">
                 <div class="card-header bg-white">

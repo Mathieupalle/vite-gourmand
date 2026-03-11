@@ -6,7 +6,7 @@
 <?php require TEMPLATES_PATH . '/partials/header.php'; ?>
 
     <h1>Mes commandes</h1>
-    <p><a href="<?= BASE_URL ?>/home">← Retour accueil</a></p>
+    <p><a href="<?= BASE_URL ?>/home">Retour accueil</a></p>
     <hr>
 
 <?php if (!$commandes): ?>

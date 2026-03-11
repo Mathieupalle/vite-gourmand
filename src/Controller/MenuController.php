@@ -67,11 +67,7 @@ final class MenuController
 
     public function menuCreate(): void
     {
-        $user = $_SESSION['user'] ?? null;
-        if (!$user || !in_array($user['role'], ['employee', 'admin'], true)) {
-            http_response_code(403);
-            die('Accès refusé');
-        }
+        \App\Security\Auth::requireRole(['employe', 'admin']);
 
         $themes = $this->service->getThemes();
         $regimes = $this->service->getRegimes();
@@ -92,13 +88,9 @@ final class MenuController
 
     public function menuEditPlats(): void
     {
-        $user = $_SESSION['user'] ?? null;
-        if (!$user || !in_array($user['role'], ['employee', 'admin'], true)) {
-            http_response_code(403);
-            die('Accès refusé');
-        }
+        \App\Security\Auth::requireRole(['employe', 'admin']);
 
-        $menus = $this->service->getAllMenus();
+        $menus = $this->service->getAllMenusForManage();
         $menuId = isset($_GET['menu_id']) ? (int)$_GET['menu_id'] : 0;
 
         $plats = [];

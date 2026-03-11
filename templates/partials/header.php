@@ -5,7 +5,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 
 $user = $_SESSION['user'] ?? null;
 $role = (string)($user['role'] ?? '');
-$isStaff = ($role === 'admin' || $role === 'employee');
+$isStaff = ($role === 'admin' || $role === 'employe');
 ?>
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
     <div class="container">
@@ -21,11 +21,15 @@ $isStaff = ($role === 'admin' || $role === 'employee');
 
         <div class="collapse navbar-collapse" id="mainNav">
             <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-                <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>/menus">Tous les menus</a></li>
-                <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>/contact">Contact</a></li>
+                <?php if (!$isStaff): // liens visibles uniquement pour les clients ?>
+                    <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>/menus">Tous les menus</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>/contact">Contact</a></li>
+                <?php endif; ?>
 
                 <?php if ($user): ?>
-                    <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>/mesCommandes">Mes commandes</a></li>
+                    <?php if (!$isStaff): ?>
+                        <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>/mesCommandes">Mes commandes</a></li>
+                    <?php endif; ?>
 
                     <?php if ($isStaff): ?>
                         <li class="nav-item">
@@ -48,8 +52,7 @@ $isStaff = ($role === 'admin' || $role === 'employee');
                         <a class="btn btn-outline-secondary btn-sm px-3" href="<?= BASE_URL ?>/login">Connexion</a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn btn-primary btn-sm px-3"
-                           href="<?= BASE_URL ?>/register">Créer un compte</a>
+                        <a class="btn btn-primary btn-sm px-3" href="<?= BASE_URL ?>/register">Créer un compte</a>
                     </li>
                 <?php endif; ?>
             </ul>

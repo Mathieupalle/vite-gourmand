@@ -6,7 +6,7 @@
 <?php require TEMPLATES_PATH . '/partials/header.php'; ?>
 
 <h1>Modifier ma commande</h1>
-<p><a href="<?= BASE_URL ?>/mesCommandes">← Retour</a></p>
+<p><a href="<?= BASE_URL ?>/mesCommandes">Retour</a></p>
 
 <?php foreach ($errors as $e): ?>
     <p style="color:red"><?= htmlspecialchars($e) ?></p>

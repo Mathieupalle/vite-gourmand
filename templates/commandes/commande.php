@@ -6,7 +6,7 @@
 <?php require TEMPLATES_PATH . '/partials/header.php'; ?>
 
 <h1>Commander : <?= htmlspecialchars((string)$menu['titre']) ?></h1>
-<p><a href="<?= BASE_URL ?>/menus">← Retour aux menus</a></p>
+<p><a href="<?= BASE_URL ?>/menus">Retour aux menus</a></p>
 
 <p>
     Prix par personne : <strong><?= number_format($prixParPersonne, 2, ',', ' ') ?> €</strong><br>

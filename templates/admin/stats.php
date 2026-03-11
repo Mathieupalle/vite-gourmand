@@ -6,7 +6,7 @@
 <?php require TEMPLATES_PATH . '/partials/header.php'; ?>
 
 <h1>Statistiques (MongoDB Atlas)</h1>
-<p><a href="<?= BASE_URL ?>/admin">← retour à l'espace gestion</a></p>
+<p><a href="<?= BASE_URL ?>/admin">Retour</a></p>
 
 <div class="row">
     <div class="card">
@@ -38,7 +38,6 @@
             <option value="year">Année</option>
         </select><br><br>
 
-        <!-- AJOUT: compare_mode (évite le JS qui casse et pilote l'alignement) -->
         <label>Mode de Comparaison</label><br>
         <select id="compare_mode">
             <option value="relative" selected>Jour par Jour (début = début)</option>
@@ -57,7 +56,6 @@
             <?php endforeach; ?>
         </select>
 
-        <!-- AJOUT: menu B pour comparaison Menu A vs Menu B -->
         <br><br>
         <label>Comparer avec Menu B</label><br>
         <select id="compare_menu_id" style="min-width:220px;">
@@ -142,10 +140,9 @@
     async function loadStats() {
         const p = getParams();
 
-        let url = `/api/revenus-stats?start=${encodeURIComponent(p.start)}&end=${encodeURIComponent(p.end)}&group=${encodeURIComponent(p.group)}&compare_mode=${encodeURIComponent(p.compare_mode)}`;
+        let url = `/vite-gourmand/public/api/revenusStats.php?start=${encodeURIComponent(p.start)}&end=${encodeURIComponent(p.end)}&group=${encodeURIComponent(p.group)}&compare_mode=${encodeURIComponent(p.compare_mode)}`;
         if (p.menuId) url += `&menu_id=${encodeURIComponent(p.menuId)}`;
 
-        // AJOUT: priorité à compare_menu_id (comparaison menus)
         if (p.compareMenuId) {
             url += `&compare_menu_id=${encodeURIComponent(p.compareMenuId)}`;
         } else if (p.compare_start && p.compare_end) {
@@ -155,7 +152,8 @@
         const res = await fetch(url);
         const json = await res.json();
 
-        if (json.error) {
+        if(json.error){
+            console.error(json.error);
             alert(json.error);
             return;
         }
@@ -177,8 +175,7 @@
         const bRev = hasCompare ? (json.compare?.totals?.revenue ?? 0) : 0;
         const bOrd = hasCompare ? (json.compare?.totals?.orders ?? 0) : 0;
 
-        // AJOUT: libellés dynamiques selon comparaison menus ou périodes
-        const isMenuCompare = hasCompare && (json.compare_menu_id !== null && json.compare_menu_id !== undefined && String(json.compare_menu_id) !== '' && Number(json.compare_menu_id) > 0);
+        const isMenuCompare = p.compareMenuId && Number(p.compareMenuId) > 0;
 
         const labelB = isMenuCompare ? "Menu B" : "Période B";
         const kpiBLabelEl = document.getElementById('kpiBLabel');
@@ -201,7 +198,6 @@
         const pct = (bRev > 0) ? ((aRev - bRev) / bRev * 100) : null;
         document.getElementById('kpiPct').textContent = (hasCompare && pct !== null) ? (pct.toFixed(1) + '%') : '—';
 
-        // Table
         const tbody = document.getElementById('tbody');
         tbody.innerHTML = '';
 
@@ -220,7 +216,6 @@
             tbody.appendChild(tr);
         });
 
-        // Chart
         if (chart) chart.destroy();
 
         const datasets = [{

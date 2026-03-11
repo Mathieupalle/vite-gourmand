@@ -6,7 +6,7 @@
 <?php require TEMPLATES_PATH . '/partials/header.php'; ?>
 
 <h1>Contact</h1>
-<p><a href="<?= BASE_URL ?>/home">← Retour accueil</a></p>
+<p><a href="<?= BASE_URL ?>/home">Retour accueil</a></p>
 
 <?php if ($success): ?>
     <p style="color:green"><?= htmlspecialchars($success) ?></p>

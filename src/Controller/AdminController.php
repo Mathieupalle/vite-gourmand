@@ -6,21 +6,26 @@ namespace App\Controller;
 use App\Core\View;
 use App\Security\Auth;
 use App\Infrastructure\Database;
+use App\Infrastructure\MongoDB;
 use App\Repository\AdminRepository;
+use App\Repository\UserRepository;
+use App\Repository\StatsRepository;
 use App\Service\AdminService;
+use App\Service\UserService;
+use App\Service\StatsService;
 
 class AdminController
 {
     public function admin(): void
     {
-        Auth::requireRole(['employee', 'admin']);
+        Auth::requireRole(['employe', 'admin']);
 
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
         }
 
         $user = $_SESSION['user'] ?? null;
-        $role = (string)($user['role'] ?? 'employee');
+        $role = (string)($user['role'] ?? 'employe');
 
         // Initialisation Repository et Service pour le dashboard
         $pdo = Database::getConnection();
@@ -129,9 +134,7 @@ Vite & Gourmand";
 
         try {
             $client = MongoDB::createFromEnvOrLocalConfig();
-            $collection = $client->selectCollection('vitegourmand', 'orders_analytics');
-
-            $repo = new StatsRepository($collection);
+            $repo = new StatsRepository($client);
             $service = new StatsService($repo);
 
             $menus = $service->getMenusForView();

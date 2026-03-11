@@ -9,6 +9,8 @@
     <a href="<?= BASE_URL ?>/home">Accueil</a> |
     <a href="<?= BASE_URL ?>/menuCreate">Créer un menu</a> |
     <a href="<?= BASE_URL ?>/menuEditPlats">Associer plats</a>
+    <br>
+    <a href="<?= BASE_URL ?>/admin">Retour</a>
 </p>
 
 <?php if ($success): ?><p style="color:green"><?= htmlspecialchars($success) ?></p><?php endif; ?>

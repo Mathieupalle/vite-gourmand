@@ -1,3 +1,4 @@
+<?php use App\Entity\CommandeStatus; ?>
 <!doctype html>
 <html lang="fr">
 <?php require TEMPLATES_PATH . '/partials/head.php'; ?>
@@ -6,10 +7,9 @@
 <?php require TEMPLATES_PATH . '/partials/header.php'; ?>
 
 <h1>Gestion des commandes</h1>
+
 <p><a href="<?= BASE_URL ?>/home">Accueil</a></p>
-<?php if ($role === 'admin'): ?>
-    <p><a href="<?= BASE_URL ?>/admin">← Retour admin</a></p>
-<?php endif; ?>
+<p><a href="<?= BASE_URL ?>/admin">Retour</a></p>
 
 <form method="get" style="margin: 12px 0;">
     <label>Filtrer par statut :</label>
@@ -21,7 +21,7 @@
             </option>
         <?php endforeach; ?>
     </select>
-    <button type="submit" name="apply" value="statut">Filtrer</button>
+    <button type="submit" name="apply" value="statut">Filtrer</button><button type="submit" name="statut" value="">Réinitialiser</button>
 
     <label style="margin-left:10px;">Filtrer par menu :</label>
     <select name="menu_id">
@@ -32,7 +32,7 @@
             </option>
         <?php endforeach; ?>
     </select>
-    <button type="submit" name="apply" value="menu">Filtrer</button>
+    <button type="submit" name="apply" value="menu">Filtrer</button><button type="submit" name="menu_id" value="0">Réinitialiser</button>
 </form>
 
 <?php if (!$commandes): ?>

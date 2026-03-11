@@ -10,7 +10,7 @@
 <h1>Gestion des comptes employés</h1>
 
 <p><a href="<?= BASE_URL ?>/home">Accueil</a></p>
-<p><a href="<?= BASE_URL ?>/admin">← Retour à l’espace Gestion</a></p>
+<p><a href="<?= BASE_URL ?>/admin">Retour</a></p>
 
 <table border="1" cellpadding="8">
 

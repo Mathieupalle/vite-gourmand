@@ -38,7 +38,7 @@
     <button type="submit">Créer un compte</button>
 </form>
 
-<p><a href="<?= BASE_URL ?>/home">← Retour accueil</a></p>
+<p><a href="<?= BASE_URL ?>/home">Retour accueil</a></p>
 
 <?php require TEMPLATES_PATH . '/partials/footer.php'; ?>
 <?php require TEMPLATES_PATH . '/partials/scripts.php'; ?>

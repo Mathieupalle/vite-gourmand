@@ -5,7 +5,7 @@
 <?php require TEMPLATES_PATH . '/partials/header.php'; ?>
 
 <h1>Associer des plats à un menu</h1>
-<p><a href="<?= BASE_URL ?>/menuManage">← Retour</a></p>
+<p><a href="<?= BASE_URL ?>/menuManage">Retour</a></p>
 
 <?php if ($success): ?><p style="color:green"><?= htmlspecialchars($success) ?></p><?php endif; ?>
 <?php foreach ($errors as $e): ?><p style="color:red"><?= htmlspecialchars($e) ?></p><?php endforeach; ?>

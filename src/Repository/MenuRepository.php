@@ -211,4 +211,9 @@ final class MenuRepository
         $this->pdo->prepare("DELETE FROM menu_plat WHERE menu_id = ?")->execute([$menuId]);
         $this->pdo->prepare("DELETE FROM menu WHERE menu_id = ?")->execute([$menuId]);
     }
+
+    public function getAllPlats(): array
+    {
+        return $this->pdo->query("SELECT * FROM plat ORDER BY titre_plat")->fetchAll() ?: [];
+    }
 }

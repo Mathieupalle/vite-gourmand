@@ -62,7 +62,10 @@ final class StatsRepository
         $compare = null;
 
         $hasCompareMenu = ($compareMenuId !== null && $compareMenuId > 0);
-        $hasComparePeriod = ($compareStart !== null && $compareEnd !== null);
+
+        $hasComparePeriod =
+            !empty($compareStart) &&
+            !empty($compareEnd);
         $hasCompare = $hasCompareMenu || $hasComparePeriod;
 
         if ($hasCompare) {

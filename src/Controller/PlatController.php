@@ -7,7 +7,7 @@ use App\Infrastructure\Database;
 use App\Repository\PlatRepository;
 use App\Security\Auth;
 use App\Service\PlatService;
-use App\View\View;
+use App\Core\View;
 use Throwable;
 
 class PlatController

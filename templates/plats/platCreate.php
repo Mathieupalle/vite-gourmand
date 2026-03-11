@@ -6,7 +6,7 @@
 <?php require TEMPLATES_PATH . '/partials/header.php'; ?>
 
 <h1>Créer un plat</h1>
-<p><a href="<?= BASE_URL ?>/platManage">← Retour</a></p>
+<p><a href="<?= BASE_URL ?>/platManage">Retour</a></p>
 
 <?php if ($success): ?>
     <p style="color:green"><?= htmlspecialchars($success) ?></p>

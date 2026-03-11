@@ -17,7 +17,7 @@ class AdminRepository
     // Compte le nombre total d'utilisateurs
     public function countUsers(): int
     {
-        $stmt = $this->pdo->query("SELECT COUNT(*) as total FROM users");
+        $stmt = $this->pdo->query("SELECT COUNT(*) as total FROM utilisateur");
         $row = $stmt->fetch();
         return (int)($row['total'] ?? 0);
     }
@@ -25,7 +25,7 @@ class AdminRepository
     // Compte le nombre total de commandes
     public function countOrders(): int
     {
-        $stmt = $this->pdo->query("SELECT COUNT(*) as total FROM commandes");
+        $stmt = $this->pdo->query("SELECT COUNT(*) as total FROM commande");
         $row = $stmt->fetch();
         return (int)($row['total'] ?? 0);
     }
@@ -33,7 +33,7 @@ class AdminRepository
     // Compte le nombre total de menus
     public function countMenus(): int
     {
-        $stmt = $this->pdo->query("SELECT COUNT(*) as total FROM menus");
+        $stmt = $this->pdo->query("SELECT COUNT(*) as total FROM menu");
         $row = $stmt->fetch();
         return (int)($row['total'] ?? 0);
     }

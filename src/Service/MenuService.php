@@ -179,4 +179,14 @@ final class MenuService
     {
         return $this->repo->findAllForManage();
     }
+
+    public function getAllPlats(): array
+    {
+        return $this->repo->getAllPlats();
+    }
+
+    public function getPlatIdsForMenu(int $menuId): array
+    {
+        return $this->repo->getPlatIdsForMenu($menuId);
+    }
 }
