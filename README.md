@@ -4,9 +4,7 @@ Elle permet à l’entreprise "Vite & Gourmand" de présenter ses menus et de fa
 
 ---
 
-# Configuration de mon environnement de travail
-
-En local (macOS / XAMPP)
+# Configuration de mon environnement de travail en local (macOS / XAMPP)
 
 1. Installer XAMPP (Apache + MySQL + PHP)
 2. Installer Composer pour gérer les dépendances PHP
@@ -28,19 +26,3 @@ En local (macOS / XAMPP)
       define('MONGODB_URI', 'mongodb+srv://vitegourmand:*****************@cluster0.ptlv7eh.mongodb.net/?appName=Cluster0&tlsAllowInvalidCertificates=true');
 
 6. Démarrer Apache et MySQL via XAMPP.
-
----
-
-En production (Heroku)
-
-1. Déployer via Git : git push heroku main
-2. Configurer les variables d’environnement dans Heroku Dashboard :
-
-      - BASE_URL : https://vite-gourmand-mathieu-db469fca4eaf.herokuapp.com
-      - DB_HOST : d1kb8x1fu8rhcnej.cbetxkdyhwsb.us-east-1.rds.amazonaws.com
-      - DB_NAME : kxdo1g9nh3n1jekt
-      - DB_PASS : ****************
-      - DB_PORT : 3306
-      - DB_USER : x9fu5b5l9sd09tzc
-      - MONGODB_URI : mongodb+srv://vitegourmand:*****************@cluster0.ptlv7eh.mongodb.net/?appName=Cluster0&authSource=admin
-      - JAWSDB_URL : mysql://x9fu5b5l9sd09tzc:****************@d1kb8x1fu8rhcnej.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/kxdo1g9nh3n1jekt
