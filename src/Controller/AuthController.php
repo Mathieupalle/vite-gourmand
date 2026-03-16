@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+require_once __DIR__ . '/../helpers.php';
+
 use App\Core\View;
 use App\Infrastructure\Database;
 use App\Repository\UserRepository;
@@ -39,7 +41,7 @@ final class AuthController
                     session_start();
                 }
 
-                $_SESSION['user'] = $sessionUser;
+                setSessionUser($sessionUser);
                 View::redirect('/home');
                 return;
 
@@ -76,8 +78,35 @@ final class AuthController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $sessionUser = $this->service->register($_POST);
-                $_SESSION['user'] = $sessionUser;
+                setSessionUser($sessionUser);
+
+                // Mail de bienvenue
+                if (!empty($sessionUser['email'])) {
+                    $mailService = new \App\Service\MailService();
+
+                    $message = "Bonjour {$sessionUser['prenom']},
+
+Bienvenue sur Vite & Gourmand !
+
+Votre compte a été créé avec succès.
+Identifiant : {$sessionUser['email']}
+
+Merci et à bientôt,
+Vite & Gourmand";
+
+                    $sent = $mailService->send(
+                        $sessionUser['email'],
+                        "Bienvenue sur Vite & Gourmand",
+                        $message
+                    );
+
+                    if (!$sent) {
+                        $errors[] = "Impossible d'envoyer le mail de bienvenue.";
+                    }
+                }
+
                 $success = "Inscription réussie. Un email de bienvenue vous a été envoyé.";
+
             } catch (\Throwable $e) {
                 $errors[] = $e->getMessage();
             }
@@ -99,8 +128,35 @@ final class AuthController
 
                 if ($token) {
                     $base = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost');
-                    $_SESSION['reset_link_demo'] = $base . "/resetPassword?token=" . urlencode($token);
+                    $resetLink = $base . "/resetPassword?token=" . urlencode($token);
+
+                    $_SESSION['reset_link_demo'] = $resetLink;
+
+                    $mailService = new \App\Service\MailService();
+
+                    $message = "Bonjour,
+
+Vous avez demandé la réinitialisation de votre mot de passe.
+
+Cliquez sur ce lien pour définir un nouveau mot de passe :
+{$resetLink}
+
+Si vous n'avez pas fait cette demande, ignorez cet email.
+
+Cordialement,
+Vite & Gourmand";
+
+                    $sent = $mailService->send(
+                        (string)($_POST['email'] ?? ''),
+                        "Réinitialisation de votre mot de passe",
+                        $message
+                    );
+
+                    if (!$sent) {
+                        $errors[] = "Impossible d'envoyer le mail de réinitialisation.";
+                    }
                 }
+
             } catch (\Throwable $e) {
                 $errors[] = $e->getMessage();
             }

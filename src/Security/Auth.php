@@ -35,4 +35,14 @@ final class Auth
             && isset($_SESSION['user'])
             && !empty($_SESSION['user']);
     }
+
+    public static function hashPassword(string $password, int $cost = 10): string
+    {
+        return password_hash($password, PASSWORD_BCRYPT, ['cost' => $cost]);
+    }
+
+    public static function verifyPassword(string $password, string $hash): bool
+    {
+        return password_verify($password, $hash);
+    }
 }

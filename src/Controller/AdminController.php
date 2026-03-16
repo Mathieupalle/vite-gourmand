@@ -56,7 +56,7 @@ class AdminController
                 $repo->deactivateUser($id);
             }
 
-            redirect('/employeManage.php');
+            redirect('/employeManage');
             exit;
         }
 
@@ -67,7 +67,7 @@ class AdminController
         ]);
     }
 
-    // Création compte employés
+    // Création d'un compte employé
     public function employeCreate(): void
     {
         Auth::requireRole(['admin']);
@@ -84,18 +84,16 @@ class AdminController
             $password = (string)($_POST['password'] ?? '');
 
             try {
-
+                // Création sécurisée de l'employé avec hashage bcrypt
                 $service->createEmployee($email, $password);
 
                 $success = "Employé créé avec succès.";
 
+                // Envoi mail notification via MailService
                 if ($email !== '') {
+                    $mailService = new \App\Service\MailService();
 
-                    $to = $email;
-                    $subject = "Création de votre compte employé - Vite & Gourmand";
-
-                    $message =
-                        "Bonjour,
+                    $message = "Bonjour,
 
 Un compte employé vient d’être créé pour vous.
 
@@ -107,16 +105,21 @@ Merci de contacter l’administrateur pour l’obtenir.
 Cordialement,
 Vite & Gourmand";
 
-                    $headers = "From: contact@vitegourmand.fr";
+                    $sent = $mailService->send(
+                        $email,
+                        "Création de votre compte employé - Vite & Gourmand",
+                        $message
+                    );
 
-                    @mail($to, $subject, $message, $headers);
+                    if (!$sent) {
+                        $errors[] = "Impossible d'envoyer le mail de notification.";
+                    }
                 }
 
             } catch (\Throwable $e) {
                 $errors[] = $e->getMessage();
             }
         }
-
         View::render('admin/employeCreate', [
             'errors' => $errors,
             'success' => $success

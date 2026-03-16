@@ -125,7 +125,7 @@ final class CommandeService
         if ($commandeId <= 0) throw new Exception("Données invalides.");
         if (!CommandeStatus::isValid($newStatut)) throw new Exception("Statut invalide.");
 
-        if ($newStatut === CommandeStatus::ANNULEE && $role === 'employee') {
+        if ($newStatut === CommandeStatus::ANNULEE && $role === 'employe') {
             $allowedModes = ['telephone', 'mail'];
             if ($modeContact === null || !in_array($modeContact, $allowedModes, true)) {
                 throw new Exception("Mode de contact manquant.");

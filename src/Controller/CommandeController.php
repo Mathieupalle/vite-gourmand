@@ -68,14 +68,14 @@ class CommandeController
     // Gestion de commandes (employé/admin)
     public function commandeManage(): void
     {
-        Auth::requireRole(['employee', 'admin']);
+        Auth::requireRole(['employe', 'admin']);
 
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
         }
 
         $user = $_SESSION['user'] ?? [];
-        $role = (string)($user['role'] ?? 'employee');
+        $role = (string)($user['role'] ?? 'employe');
 
         $pdo = Database::getConnection();
 
@@ -405,7 +405,7 @@ class CommandeController
     // Mise à jour du statut de la commande
     public function commandeUpdateStatut(): void
     {
-        Auth::requireRole(['employee', 'admin']);
+        Auth::requireRole(['employe', 'admin']);
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -447,7 +447,7 @@ class CommandeController
             $service->changerStatut(
                 $commandeId,
                 $statut,
-                'employee',
+                'employe',
                 $modeContact,
                 $motif
             );

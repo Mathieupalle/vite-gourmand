@@ -14,7 +14,7 @@ final class AvisController
     // Gestion des avis
     public function avisManage(): void
     {
-        Auth::requireRole(['employee', 'admin']);
+        Auth::requireRole(['employe', 'admin']);
 
         $pdo = Database::getConnection();
         $repo = new AvisRepository($pdo);
@@ -27,7 +27,7 @@ final class AvisController
 
             $service->updateAvisStatut($avisId, $statut);
 
-            redirect('/avisManage.php');
+            redirect('/avisManage');
             exit;
         }
 
@@ -49,7 +49,7 @@ final class AvisController
 
         $userId = (int)($_SESSION['user']['id'] ?? $_SESSION['user']['utilisateur_id'] ?? 0);
         if ($userId <= 0) {
-            redirect('/login.php');
+            redirect('/login');
             exit;
         }
 

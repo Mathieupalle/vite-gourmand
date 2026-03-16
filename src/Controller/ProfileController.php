@@ -21,7 +21,7 @@ class ProfileController
 
         $userId = (int)($_SESSION['user']['id'] ?? $_SESSION['user']['utilisateur_id'] ?? 0);
         if ($userId <= 0) {
-            header('Location: ' . BASE_URL . '/login.php');
+            header('Location: ' . BASE_URL . '/login');
             exit;
         }
 

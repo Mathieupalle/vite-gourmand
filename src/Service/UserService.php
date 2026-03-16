@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Repository\UserRepository;
+use App\Security\Auth;
 use DateTimeImmutable;
 use Exception;
 
@@ -11,6 +12,7 @@ final class UserService
 {
     public function __construct(private UserRepository $repo) {}
 
+    // Connexion utilisateur
     public function login(string $email, string $password): array
     {
         $email = trim($email);
@@ -25,15 +27,9 @@ final class UserService
         if (!$user) {
             throw new Exception("Email ou mot de passe incorrect.");
         }
-        
-        $stored = (string)$user['password'];
-        $ok = false;
 
-        if (str_starts_with($stored, '$2y$') || str_starts_with($stored, '$argon2')) {
-            $ok = password_verify($password, $stored);
-        } else {
-            $ok = hash_equals($stored, $password);
-        }
+        $stored = (string)$user['password'];
+        $ok = password_verify($password, $stored);
 
         if (!$ok) {
             throw new Exception("Email ou mot de passe incorrect.");
@@ -53,6 +49,7 @@ final class UserService
         ];
     }
 
+    // Inscription utilisateur
     public function register(array $post): array
     {
         $nom = trim((string)($post['nom'] ?? ''));
@@ -65,25 +62,21 @@ final class UserService
         if ($nom === '') throw new Exception("Nom obligatoire.");
         if ($prenom === '') throw new Exception("Prénom obligatoire.");
         if ($adresse === '') throw new Exception("Adresse postale obligatoire.");
-
-        if ($telephone === '') {
-            throw new Exception("Numéro de téléphone obligatoire.");
-        }
+        if ($telephone === '') throw new Exception("Numéro de téléphone obligatoire.");
         if (!preg_match('/^[0-9 +().-]{8,20}$/', $telephone)) {
             throw new Exception("Numéro de téléphone invalide.");
         }
-
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new Exception("Email invalide.");
         }
-
         if (!$this->isStrongPassword($password)) {
             throw new Exception("Mot de passe trop faible : 10 caractères minimum avec majuscule, minuscule, chiffre et caractère spécial.");
         }
-
         if ($this->repo->existsByEmail($email)) {
             throw new Exception("Email déjà utilisé.");
         }
+
+        $hash = Auth::hashPassword($password);
 
         $userId = $this->repo->createUser([
             'nom' => $nom,
@@ -91,7 +84,7 @@ final class UserService
             'telephone' => $telephone,
             'adresse_postale' => $adresse,
             'email' => $email,
-            'password' => $password,
+            'password' => $hash,
         ], 1);
 
         return [
@@ -107,6 +100,7 @@ final class UserService
         ];
     }
 
+    // Création compte employé
     public function createEmployee(string $email, string $password): void
     {
         $email = trim($email);
@@ -120,9 +114,11 @@ final class UserService
             throw new Exception("Email déjà utilisé.");
         }
 
+        $hash = Auth::hashPassword($password);
+
         $this->repo->createUser([
             'email' => $email,
-            'password' => $password,
+            'password' => $hash,
             'nom' => '',
             'prenom' => null,
             'telephone' => null,
@@ -131,6 +127,7 @@ final class UserService
         ], 2);
     }
 
+    // Réinitialisation mot de passe
     public function requestReset(string $email): ?string
     {
         $email = trim($email);
@@ -139,9 +136,7 @@ final class UserService
         }
 
         $user = $this->repo->findActiveByEmailWithRole($email);
-        if (!$user) {
-            return null; // message neutre côté UI
-        }
+        if (!$user) return null;
 
         $token = bin2hex(random_bytes(32));
         $expires = (new DateTimeImmutable('+1 hour'))->format('Y-m-d H:i:s');
@@ -169,9 +164,11 @@ final class UserService
             throw new Exception("Mot de passe trop faible : 10 caractères minimum avec majuscule, minuscule, chiffre et caractère spécial.");
         }
 
-        $this->repo->updatePasswordAndClearReset((int)$row['utilisateur_id'], $pass1);
+        $hash = Auth::hashPassword($pass1);
+        $this->repo->updatePasswordAndClearReset((int)$row['utilisateur_id'], $hash);
     }
 
+    // Mise à jour profil
     public function updateProfile(int $userId, array $post): array
     {
         $nom = trim((string)($post['nom'] ?? ''));
@@ -197,6 +194,7 @@ final class UserService
         return $fresh;
     }
 
+    // Vérification force mot de passe
     private function isStrongPassword(string $password): bool
     {
         if (strlen($password) < 10) return false;

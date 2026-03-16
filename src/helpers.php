@@ -15,4 +15,22 @@ if (!function_exists('redirect')) {
         header('Location: ' . base_url() . $path);
         exit;
     }
+
+    function setSessionUser(array $user): void
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
+        $_SESSION['user'] = [
+            'id' => $user['id'],
+            'email' => $user['email'],
+            'role' => strtolower($user['role']), // 'admin', 'employe', 'user'
+            'nom' => $user['nom'],
+            'prenom' => $user['prenom'],
+            'telephone' => $user['telephone'] ?? '',
+            'ville' => $user['ville'] ?? null,
+            'adresse_postale' => $user['adresse_postale'] ?? '',
+        ];
+    }
 }

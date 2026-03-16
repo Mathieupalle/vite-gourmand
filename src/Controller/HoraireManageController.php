@@ -13,7 +13,7 @@ final class HoraireManageController
 {
     public function horaireManage(): void
     {
-        Auth::requireRole(['employee', 'admin']);
+        Auth::requireRole(['employe', 'admin']);
 
         $pdo = Database::getConnection();
         $repo = new HoraireRepository($pdo);

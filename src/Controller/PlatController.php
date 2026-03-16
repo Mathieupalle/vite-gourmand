@@ -15,7 +15,7 @@ class PlatController
     // Modifier plats
     public function platEdit(): void
     {
-        Auth::requireRole(['employee', 'admin']);
+        Auth::requireRole(['employe', 'admin']);
 
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
@@ -59,7 +59,7 @@ class PlatController
 
                     $service->updateFromPost($platId, $_POST);
 
-                    header('Location: ' . BASE_URL . '/platEdit.php?id=' . $platId . '&success=1');
+                    header('Location: ' . BASE_URL . '/platEdit?id=' . $platId . '&success=1');
                     exit;
 
                 } catch (Throwable $e) {
@@ -84,7 +84,7 @@ class PlatController
     // Gestion des plats
     public function platManage(): void
     {
-        Auth::requireRole(['employee', 'admin']);
+        Auth::requireRole(['employe', 'admin']);
 
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
@@ -107,7 +107,7 @@ class PlatController
 
             $service->delete((int)$_POST['delete_id']);
 
-            redirect('/platManage.php');
+            redirect('/platManage');
             exit;
         }
 
@@ -121,7 +121,7 @@ class PlatController
     // Création de plats
     public function platCreate(): void
     {
-        Auth::requireRole(['employee', 'admin']);
+        Auth::requireRole(['employe', 'admin']);
 
         $pdo = Database::getConnection();
         $repo = new PlatRepository($pdo);
