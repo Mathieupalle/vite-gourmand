@@ -1,10 +1,7 @@
 <?php
 declare(strict_types=1);
 
-// ⚡ Ajoute cette ligne pour que PHP connaisse MongoDB\Client
 require __DIR__ . '/../vendor/autoload.php';
-
-// Inclure ta config
 require __DIR__ . '/../config.php';
 
 echo "<h2>Test base de données</h2>";
@@ -21,7 +18,7 @@ try {
 // --- Test MongoDB ---
 try {
     $client = new MongoDB\Client($mongodbUri);
-    $dbs = $client->listDatabases();
+    $dbs = iterator_to_array($client->listDatabases());
     echo "MongoDB OK: " . count($dbs) . " databases found.<br>";
 } catch (Exception $e) {
     echo "Erreur MongoDB: " . $e->getMessage() . "<br>";
