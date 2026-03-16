@@ -1,15 +1,17 @@
 <?php
 declare(strict_types=1);
 
-// Affichage des erreurs pour debug
+// --- Affichage des erreurs pour debug ---
 ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 
-// --- Configuration base de données ---
+// --- Configuration base de données MySQL ---
+
 $databaseUrl = getenv('JAWSDB_URL'); // Variable Heroku JawsDB
 
 if ($databaseUrl) {
+    // Si JAWSDB_URL existe, récupérer host, user, pass, db
     $dbparts = parse_url($databaseUrl);
 
     define('DB_HOST', $dbparts['host']);
@@ -30,7 +32,7 @@ if ($databaseUrl) {
 define('BASE_URL', getenv('BASE_URL') ?: '/');
 define('TEMPLATES_PATH', getenv('HEROKU_TEMPLATES_PATH') ?: __DIR__ . '/templates');
 
-// --- Connexion PDO ---
+// --- Connexion PDO MySQL ---
 try {
     $pdo = new PDO(
         "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";charset=utf8mb4",
@@ -42,5 +44,12 @@ try {
         ]
     );
 } catch (PDOException $e) {
-    die("Erreur de connexion à la base de données : " . $e->getMessage());
+    die("Erreur de connexion MySQL : " . $e->getMessage());
 }
+
+// --- Configuration MongoDB ---
+$mongodbUri = getenv('MONGODB_URI') ?: 'mongodb+srv://vitegourmand:ViteGourmand12345@cluster0.ptlv7eh.mongodb.net/?appName=Cluster0&tlsAllowInvalidCertificates=true';
+
+return [
+    'MONGODB_URI' => $mongodbUri
+];
