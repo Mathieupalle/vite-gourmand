@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-require __DIR__ . '/../vendor/autoload.php'; // si vous utilisez Composer
-require __DIR__ . '/../src/Auth.php';       // chemin vers votre Auth.php
+require __DIR__ . '/vendor/autoload.php'; // si vous utilisez Composer
+require __DIR__ . '/src/Auth.php';       // chemin vers votre Auth.php
 
 use App\Security\Auth;
 
