@@ -3,8 +3,9 @@
   "description": "Projet final Vite Gourmand",
   "license": "proprietary",
   "require": {
+    "php": "^8.1",
     "mongodb/mongodb": "~2.1.0",
-    "ext-mongodb": "^2.1",
+    "ext-mongodb": "*",
     "phpmailer/phpmailer": "^7.0"
   },
   "autoload": {
