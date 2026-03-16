@@ -4,22 +4,24 @@ declare(strict_types=1);
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../config.php';
 
-echo "<h2>Test base de données</h2>";
+echo "<h2>Test MongoDB Bases</h2>";
 
-// --- Test MySQL ---
-try {
-    $stmt = $pdo->query("SELECT NOW() AS `current_time`");
-    $row = $stmt->fetch();
-    echo "MySQL OK: " . $row['current_time'] . "<br>";
-} catch (Exception $e) {
-    echo "Erreur MySQL: " . $e->getMessage() . "<br>";
-}
-
-// --- Test MongoDB ---
 try {
     $client = new MongoDB\Client($mongodbUri);
     $dbs = iterator_to_array($client->listDatabases());
-    echo "MongoDB OK: " . count($dbs) . " databases found.<br>";
+
+    echo "Toutes les bases MongoDB :<br>";
+    foreach ($dbs as $db) {
+        echo "- " . $db['name'] . "<br>";
+    }
+
+    // Filtrer uniquement les bases “utilisateur”
+    $userDbs = array_filter($dbs, fn($db) => !in_array($db['name'], ['admin', 'local', 'config']));
+    echo "<br>Bases utilisateur : " . count($userDbs) . "<br>";
+    foreach ($userDbs as $db) {
+        echo "- " . $db['name'] . "<br>";
+    }
+
 } catch (Exception $e) {
     echo "Erreur MongoDB: " . $e->getMessage() . "<br>";
 }
