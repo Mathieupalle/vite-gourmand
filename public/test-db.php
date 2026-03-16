@@ -1,7 +1,12 @@
 <?php
-require 'config.php';
+declare(strict_types=1);
 
-// Test MySQL
+// Inclure config
+require __DIR__ . '/../config.php'; // très important
+
+echo "<h2>Test base de données</h2>";
+
+// --- Test MySQL ---
 try {
     $stmt = $pdo->query("SELECT NOW() AS current_time");
     $row = $stmt->fetch();
@@ -10,7 +15,7 @@ try {
     echo "Erreur MySQL: " . $e->getMessage() . "<br>";
 }
 
-// Test MongoDB
+// --- Test MongoDB ---
 try {
     $client = new MongoDB\Client($mongodbUri);
     $dbs = $client->listDatabases();
