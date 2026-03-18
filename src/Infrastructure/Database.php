@@ -1,7 +1,4 @@
 <?php
-// Connexion PDO (POO)
-// Compatible Local (XAMPP) + Heroku (JawsDB)
-
 declare(strict_types=1);
 
 namespace App\Infrastructure;
@@ -24,6 +21,7 @@ final class Database
 
         try {
             if ($jawsUrl) {
+
                 // PRODUCTION (Heroku + JawsDB)
                 $parts = parse_url($jawsUrl);
 
@@ -45,22 +43,26 @@ final class Database
                     PDO::ATTR_EMULATE_PREPARES   => false,
                 ];
 
-                // Désactivation vérif certificat SSL si disponible (compat Heroku/JawsDB)
-                if (defined('Pdo\\Mysql::ATTR_SSL_VERIFY_SERVER_CERT')) {
-                    $opts[\Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT] = false;
-                } elseif (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
+                // Désactivation SSL pour JawsDB / Heroku
+                if (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
                     $opts[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
                 }
 
                 self::$pdo = new PDO($dsn, $user, $pass, $opts);
+
             } else {
-                // LOCAL (XAMPP)
-                $dsn = "mysql:host=127.0.0.1;port=3306;dbname=vite_gourmand;charset=utf8mb4";
+
+                // LOCAL (Docker ou XAMPP)
+                $isDocker = getenv('DOCKER') === '1';
+                $host = $isDocker ? 'db' : '127.0.0.1';
+
+                $dsn = "mysql:host={$host};port=3306;dbname=vite_gourmand;charset=utf8mb4";
 
                 self::$pdo = new PDO($dsn, "siteweb", "!Cm51]IOX1HfAiix", [
                     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                     PDO::ATTR_EMULATE_PREPARES   => false,
+                    PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
                 ]);
             }
 
