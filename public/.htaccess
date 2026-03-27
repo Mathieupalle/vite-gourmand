@@ -1,8 +1,5 @@
 RewriteEngine On
 
-# Base
-RewriteBase /vite-gourmand/public/
-
 # Ne pas toucher aux fichiers existants
 RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule ^ - [L]
@@ -10,5 +7,5 @@ RewriteRule ^ - [L]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# Sinon → router
+# Redirige tout vers index.php
 RewriteRule ^ index.php [QSA,L]
