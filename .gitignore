@@ -1,5 +1,4 @@
 # Config sensible
-config.php
 config.local.php
 .env
 
