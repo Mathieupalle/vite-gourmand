@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vite_gourmand_app
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8080:80"
+    environment:
+      DOCKER: "1"
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+    depends_on:
+      - db
+    networks:
+      - vg_network
+
+  db:
+    image: mysql:8.1
+    container_name: vite_gourmand_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "rootpassword"
+      MYSQL_DATABASE: "vite_gourmand"
+      MYSQL_USER: "siteweb"
+      MYSQL_PASSWORD: "!Cm51]IOX1HfAiix"
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
+    networks:
+      - vg_network
+
+networks:
+  vg_network:
+
+volumes:
+  db_data:

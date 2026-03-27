@@ -1,0 +1,195 @@
+<?php
+declare(strict_types=1);
+
+namespace App\Controller;
+
+require_once __DIR__ . '/../helpers.php';
+
+use App\Core\View;
+use App\Infrastructure\Database;
+use App\Repository\UserRepository;
+use App\Service\UserService;
+use App\Security\Auth;
+
+final class AuthController
+{
+    private UserService $service;
+
+    public function __construct()
+    {
+        $pdo = Database::getConnection();
+        $this->service = new UserService(new UserRepository($pdo));
+    }
+
+    // Formulaire de connexion + traitement
+    public function login(): void
+    {
+        if (Auth::isLoggedIn()) {
+            View::redirect('/home');
+        }
+
+        $errors = [];
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                $sessionUser = $this->service->login(
+                    (string)($_POST['email'] ?? ''),
+                    (string)($_POST['password'] ?? '')
+                );
+
+                if (session_status() !== PHP_SESSION_ACTIVE) {
+                    session_start();
+                }
+
+                setSessionUser($sessionUser);
+                View::redirect('/home');
+                return;
+
+            } catch (\Throwable $e) {
+                $errors[] = $e->getMessage();
+            }
+        }
+
+        View::render('auth/login', ['errors' => $errors]);
+    }
+
+    public function logout(): void
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
+        $_SESSION = [];
+        session_destroy();
+
+        View::redirect('/home');
+    }
+
+    // Formulaire d'inscription
+    public function register(): void
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
+        $errors = [];
+        $success = null;
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                $sessionUser = $this->service->register($_POST);
+                setSessionUser($sessionUser);
+
+                // Mail de bienvenue
+                if (!empty($sessionUser['email'])) {
+                    $mailService = new \App\Service\MailService();
+
+                    $message = "Bonjour {$sessionUser['prenom']},
+
+Bienvenue sur Vite & Gourmand !
+
+Votre compte a été créé avec succès.
+Identifiant : {$sessionUser['email']}
+
+Merci et à bientôt,
+Vite & Gourmand";
+
+                    $sent = $mailService->send(
+                        $sessionUser['email'],
+                        "Bienvenue sur Vite & Gourmand",
+                        $message
+                    );
+
+                    if (!$sent) {
+                        $errors[] = "Impossible d'envoyer le mail de bienvenue.";
+                    }
+                }
+
+                $success = "Inscription réussie. Un email de bienvenue vous a été envoyé.";
+
+            } catch (\Throwable $e) {
+                $errors[] = $e->getMessage();
+            }
+        }
+
+        View::render('auth/register', compact('errors', 'success'));
+    }
+
+    // Mot de passe oublié
+    public function forgotPassword(): void
+    {
+        $errors = [];
+        $success = null;
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                $token = $this->service->requestReset((string)($_POST['email'] ?? ''));
+                $success = "Si un compte existe avec cet email, un lien de réinitialisation a été envoyé.";
+
+                if ($token) {
+                    $base = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost');
+                    $resetLink = $base . "/resetPassword?token=" . urlencode($token);
+
+                    $_SESSION['reset_link_demo'] = $resetLink;
+
+                    $mailService = new \App\Service\MailService();
+
+                    $message = "Bonjour,
+
+Vous avez demandé la réinitialisation de votre mot de passe.
+
+Cliquez sur ce lien pour définir un nouveau mot de passe :
+{$resetLink}
+
+Si vous n'avez pas fait cette demande, ignorez cet email.
+
+Cordialement,
+Vite & Gourmand";
+
+                    $sent = $mailService->send(
+                        (string)($_POST['email'] ?? ''),
+                        "Réinitialisation de votre mot de passe",
+                        $message
+                    );
+
+                    if (!$sent) {
+                        $errors[] = "Impossible d'envoyer le mail de réinitialisation.";
+                    }
+                }
+
+            } catch (\Throwable $e) {
+                $errors[] = $e->getMessage();
+            }
+        }
+
+        View::render('auth/forgotPassword', compact('errors', 'success'));
+    }
+
+    // Réinitialisation du mot de passe
+    public function resetPassword(): void
+    {
+        if (empty($_GET['token'])) {
+            http_response_code(400);
+            exit("Token manquant.");
+        }
+
+        $token = $_GET['token'];
+        $errors = [];
+        $success = null;
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                $this->service->resetPassword(
+                    $token,
+                    (string)($_POST['password'] ?? ''),
+                    (string)($_POST['password_confirm'] ?? '')
+                );
+                $success = "Mot de passe mis à jour. Vous pouvez vous connecter.";
+            } catch (\Throwable $e) {
+                $errors[] = $e->getMessage();
+            }
+        }
+
+        View::render('auth/resetPassword', compact('errors', 'success', 'token'));
+    }
+}
