@@ -22,7 +22,6 @@ if ($databaseUrl) {
     define('DB_USER', $dbparts['user']);
     define('DB_PASS', $dbparts['pass']);
 }
-endif
 
 // URL & Templates
 define('BASE_URL', getenv('BASE_URL') ?: '/');
