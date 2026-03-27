@@ -1,0 +1,19 @@
+# Config sensible
+config.php
+config.local.php
+.env
+
+# Dépendances
+vendor/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Docker
+docker-compose.override.yml
+
+# Binaires
+*.deb
