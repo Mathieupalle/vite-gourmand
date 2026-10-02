@@ -12,6 +12,8 @@ services:
       - "8080:80"
     environment:
       DOCKER: "1"
+      APP_ENV: "dev"
+      APP_URL: "http://localhost:8080"
       LANG: C.UTF-8
       LC_ALL: C.UTF-8
     depends_on:
