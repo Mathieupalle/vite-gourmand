@@ -127,10 +127,13 @@ Vite & Gourmand";
                 $success = "Si un compte existe avec cet email, un lien de réinitialisation a été envoyé.";
 
                 if ($token) {
-                    $base = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost');
+                    $base = rtrim((string)(getenv('APP_URL') ?: 'http://localhost:8080'), '/');
                     $resetLink = $base . "/resetPassword?token=" . urlencode($token);
 
-                    $_SESSION['reset_link_demo'] = $resetLink;
+// Affichage du lien réservé au développement local
+                    if (getenv('APP_ENV') === 'dev') {
+                        $_SESSION['reset_link_demo'] = $resetLink;
+                    }
 
                     $mailService = new \App\Service\MailService();
 

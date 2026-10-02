@@ -16,7 +16,7 @@ CREATE TABLE utilisateur (
   adresse_postale VARCHAR(50) NULL,
   role_id INT NOT NULL,
   reset_token VARCHAR(64) NULL,
-  reset_expire DATETIME NULL,
+  reset_expires DATETIME NULL,
   actif BOOL NULL,
   CONSTRAINT fk_utilisateur_role FOREIGN KEY (role_id) REFERENCES role(role_id)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -100,7 +100,7 @@ CREATE TABLE plat_horaire (
 CREATE TABLE commande (
   commande_id INT AUTO_INCREMENT PRIMARY KEY,
   numero_commande VARCHAR(50) NOT NULL UNIQUE,
-  date_commande DATE NOT NULL,
+  date_commande DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   date_prestation DATE NOT NULL,
   heure_livraison VARCHAR(50) NULL,
   prix_menu DOUBLE NOT NULL,
