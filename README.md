@@ -22,10 +22,12 @@ composer install
 cp config.local.example.php config.local.php
 ```
 
-6. Renseigner l'URI MongoDB (facultatif : elle ne sert qu'aux statistiques de l'administrateur) :
+6. Renseigner l'URI MongoDB dans `config.local.php` (facultatif : elle ne sert qu'aux statistiques de l'administrateur). Remplacer la valeur vide du tableau final :
 
 ```php
-define('MONGODB_URI', 'mongodb+srv://UTILISATEUR:MOT_DE_PASSE@CLUSTER.mongodb.net/?appName=Cluster0');
+return [
+    'MONGODB_URI' => 'mongodb+srv://UTILISATEUR:MOT_DE_PASSE@CLUSTER.mongodb.net/?appName=Cluster0'
+];
 ```
 
 7. Créer la base `vite_gourmand` dans phpMyAdmin, puis importer `sql/01.schema.sql` et `sql/02.insert.sql`

@@ -53,5 +53,5 @@ while (true) {
 
 // MongoDB
 return [
-    'MONGODB_URI' => 'VOTRE_URI_MONGODB'
+    'MONGODB_URI' => ''
 ];
