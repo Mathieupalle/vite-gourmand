@@ -42,6 +42,17 @@ final class AuthController
                 }
 
                 setSessionUser($sessionUser);
+
+                // Retour à la page demandée avant la connexion (chemin interne uniquement)
+                $cible = (string)($_SESSION['redirect_after_login'] ?? '');
+                unset($_SESSION['redirect_after_login']);
+                if ($cible !== ''
+                    && preg_match('#^/(?![/\\\\])[^\r\n]*$#', $cible)
+                    && !preg_match('#/(login|logout)\b#', $cible)) {
+                    header('Location: ' . $cible);
+                    exit;
+                }
+
                 View::redirect('/home');
                 return;
 
