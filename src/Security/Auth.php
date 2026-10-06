@@ -12,6 +12,10 @@ final class Auth
         }
 
         if (empty($_SESSION['user'])) {
+            // Mémorise la page demandée pour y revenir après la connexion (requêtes GET uniquement)
+            if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET') {
+                $_SESSION['redirect_after_login'] = (string)($_SERVER['REQUEST_URI'] ?? '');
+            }
             header("Location: {$redirectTo}");
             exit;
         }
