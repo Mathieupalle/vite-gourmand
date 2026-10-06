@@ -434,7 +434,7 @@ class CommandeController
             exit("Vous devez préciser le motif.");
         }
 
-        if (!in_array($modeContact, ['telephone', 'email'], true)) {
+        if (!in_array($modeContact, ['telephone', 'mail'], true)) {
             http_response_code(400);
             exit("Type de contact invalide.");
         }

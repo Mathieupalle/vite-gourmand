@@ -93,7 +93,7 @@
                                 ?>
                                 <li>
                                     <?= htmlspecialchars($sLabel) ?>
-                                    — <?= htmlspecialchars((string)$s['date_modif']) ?>
+                                    — <?= htmlspecialchars(dateFr((string)$s['date_modif'])) ?>
                                 </li>
                             <?php endforeach; ?>
                         </ul>

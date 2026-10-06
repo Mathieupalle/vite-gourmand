@@ -34,3 +34,18 @@ if (!function_exists('redirect')) {
         ];
     }
 }
+// Convertit une date enregistrée en UTC vers l'heure de Paris pour l'affichage
+if (!function_exists('dateFr')) {
+    function dateFr(?string $value, string $format = 'd/m/Y H:i'): string
+    {
+        if ($value === null || $value === '') {
+            return '';
+        }
+        try {
+            $date = new DateTimeImmutable($value, new DateTimeZone('UTC'));
+            return $date->setTimezone(new DateTimeZone('Europe/Paris'))->format($format);
+        } catch (Throwable $e) {
+            return $value;
+        }
+    }
+}

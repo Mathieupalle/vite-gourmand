@@ -101,7 +101,7 @@ $menuFiltre = $menuFiltre ?? 0;
                         <td><?= htmlspecialchars((string)($c['client_email'] ?? '')) ?></td>
                         <td><?= htmlspecialchars((string)($c['menu_titre'] ?? '')) ?></td>
                         <td><?= $nb ?></td>
-                        <td><?= htmlspecialchars((string)($c['date_commande'] ?? '')) ?></td>
+                        <td><?= htmlspecialchars(dateFr((string)($c['date_commande'] ?? ''))) ?></td>
                         <td><?= htmlspecialchars((string)($c['date_prestation'] ?? '')) ?></td>
                         <td>
                             <?= htmlspecialchars(($c['date_livraison'] ?? '') . ' ' . ($c['heure_livraison'] ?? '')) ?>

@@ -12,6 +12,18 @@ use Throwable;
 
 final class CommandeService
 {
+    // Libellés affichés au client dans les mails de suivi
+    private const LIBELLES_STATUT = [
+        CommandeStatus::EN_ATTENTE              => 'en attente de validation',
+        CommandeStatus::ACCEPTE                 => 'acceptée',
+        CommandeStatus::EN_PREPARATION          => 'en préparation',
+        CommandeStatus::EN_COURS_LIVRAISON      => 'en cours de livraison',
+        CommandeStatus::LIVRE                   => 'livrée',
+        CommandeStatus::ATTENTE_RETOUR_MATERIEL => 'en attente du retour du matériel',
+        CommandeStatus::TERMINEE                => 'terminée',
+        CommandeStatus::ANNULEE                 => 'annulée',
+    ];
+
     public function __construct(
         private PDO $pdo,
         private CommandeRepository $repo
@@ -107,6 +119,9 @@ final class CommandeService
 
             $this->pdo->commit();
 
+            // Mail de confirmation : un échec d'envoi n'annule jamais la commande
+            $this->envoyerConfirmation($commandeId, $numeroCommande, $menuTitre, $nb, $dp, $totalFinal);
+
             return [
                 'commandeId' => $commandeId,
                 'menuTitre'  => $menuTitre,
@@ -152,9 +167,89 @@ final class CommandeService
             );
 
             $this->pdo->commit();
+
+            // Mail de suivi : un échec d'envoi n'annule jamais le changement de statut
+            $this->envoyerChangementStatut($commandeId, $newStatut);
         } catch (Throwable $e) {
             $this->pdo->rollBack();
             throw $e;
+        }
+    }
+
+    // Lien vers "Mes commandes" (vide si APP_URL n'est pas défini)
+    private function lienMesCommandes(): string
+    {
+        $base = rtrim((string)(getenv('APP_URL') ?: ''), '/');
+        return $base !== '' ? $base . '/mesCommandes' : '';
+    }
+
+    private function envoyerConfirmation(int $commandeId, string $numero, string $menuTitre, int $nb, DateTimeImmutable $datePrestation, float $total): void
+    {
+        $lien = $this->lienMesCommandes();
+
+        $corps = "Bonjour,\n\n"
+            . "Nous avons bien reçu votre commande {$numero}.\n\n"
+            . "Menu : {$menuTitre}\n"
+            . "Nombre de personnes : {$nb}\n"
+            . "Date de prestation : " . $datePrestation->format('d/m/Y') . "\n"
+            . "Total : " . number_format($total, 2, ',', ' ') . " €\n\n"
+            . "Vous pouvez suivre son état dans « Mes commandes »"
+            . ($lien !== '' ? " : {$lien}" : ".") . "\n\n"
+            . "Cordialement,\nVite & Gourmand";
+
+        $this->notifierClient($commandeId, "Confirmation de votre commande {$numero}", $corps);
+    }
+
+    private function envoyerChangementStatut(int $commandeId, string $statut): void
+    {
+        try {
+            $stmt = $this->pdo->prepare('SELECT numero_commande FROM commande WHERE commande_id = ? LIMIT 1');
+            $stmt->execute([$commandeId]);
+            $numero = (string)($stmt->fetchColumn() ?: '');
+        } catch (Throwable $e) {
+            error_log('Notification commande : ' . $e->getMessage());
+            return;
+        }
+
+        if ($numero === '') {
+            return;
+        }
+
+        $libelle = self::LIBELLES_STATUT[$statut] ?? $statut;
+        $lien = $this->lienMesCommandes();
+
+        $corps = "Bonjour,\n\n"
+            . "Le statut de votre commande {$numero} a changé : elle est désormais {$libelle}.\n\n";
+
+        if ($statut === CommandeStatus::TERMINEE) {
+            $corps .= "Merci de votre confiance ! Votre avis nous intéresse : vous pouvez le déposer depuis « Mes commandes »"
+                . ($lien !== '' ? " : {$lien}" : ".") . "\n\n";
+        } elseif ($lien !== '') {
+            $corps .= "Suivre votre commande : {$lien}\n\n";
+        }
+
+        $corps .= "Cordialement,\nVite & Gourmand";
+
+        $this->notifierClient($commandeId, "Commande {$numero} : {$libelle}", $corps);
+    }
+
+    // Envoie un mail au client de la commande, sans jamais lever d'exception
+    private function notifierClient(int $commandeId, string $sujet, string $corps): void
+    {
+        try {
+            $email = $this->repo->findClientEmailByCommandeId($commandeId);
+            if ($email === null || $email === '') {
+                return;
+            }
+
+            // Comptes de démonstration : aucun envoi (domaine qui n'appartient pas au projet)
+            if (str_ends_with(strtolower($email), '@demo.fr')) {
+                return;
+            }
+
+            (new MailService())->send($email, $sujet, $corps);
+        } catch (Throwable $e) {
+            error_log('Notification commande : ' . $e->getMessage());
         }
     }
 }
