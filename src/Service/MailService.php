@@ -16,15 +16,15 @@ final class MailService
 
         // Config SMTP
         $this->mailer->isSMTP();
-        $this->mailer->Host       = 'smtp.example.com';
+        $this->mailer->Host       = getenv('SMTP_HOST') ?: '';
         $this->mailer->SMTPAuth   = true;
-        $this->mailer->Username   = 'user@example.com';
-        $this->mailer->Password   = 'password';
+        $this->mailer->Username   = getenv('SMTP_USER') ?: '';
+        $this->mailer->Password   = getenv('SMTP_PASS') ?: '';
         $this->mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $this->mailer->Port       = 587;
+        $this->mailer->Port       = (int)(getenv('SMTP_PORT') ?: 587);
 
         // Expéditeur
-        $this->mailer->setFrom('contact@vitegourmand.fr', 'Vite & Gourmand');
+        $this->mailer->setFrom(getenv('SMTP_FROM') ?: 'no-reply@example.com', 'Vite & Gourmand');
         $this->mailer->isHTML(false);
     }
 

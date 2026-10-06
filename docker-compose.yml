@@ -14,6 +14,11 @@ services:
       DOCKER: "1"
       APP_ENV: "dev"
       APP_URL: "http://localhost:8080"
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-}
       LANG: C.UTF-8
       LC_ALL: C.UTF-8
     depends_on:
