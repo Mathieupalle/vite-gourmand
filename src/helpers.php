@@ -49,3 +49,11 @@ if (!function_exists('dateFr')) {
         }
     }
 }
+
+// Racine des URLs de l'application (vide à la racine du domaine)
+if (!function_exists('base_url')) {
+    function base_url(): string
+    {
+        return rtrim(defined('BASE_URL') ? (string)BASE_URL : '', '/');
+    }
+}

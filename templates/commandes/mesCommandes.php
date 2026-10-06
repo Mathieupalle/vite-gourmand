@@ -76,6 +76,16 @@
                         </div>
                     <?php endif; ?>
 
+
+                    <?php if ((string)($c['statut'] ?? '') === 'terminee'): ?>
+                        <div class="mt-3">
+                            <a href="<?= BASE_URL ?>/avisCreate?commande_id=<?= $commandeId ?>"
+                               class="btn btn-sm btn-success">
+                                Laisser un avis
+                            </a>
+                        </div>
+                    <?php endif; ?>
+
                     <hr>
 
                     <h6>Suivi</h6>
