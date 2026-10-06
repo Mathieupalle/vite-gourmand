@@ -60,7 +60,7 @@
                                 </td>
 
                                 <td>
-                                    <?= htmlspecialchars((string)$a['date_avis']) ?>
+                                    <?= htmlspecialchars(dateFr((string)$a['date_avis'])) ?>
                                 </td>
 
                                 <td>

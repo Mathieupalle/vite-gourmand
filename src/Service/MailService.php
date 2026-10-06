@@ -22,6 +22,7 @@ final class MailService
         $this->mailer->Password   = getenv('SMTP_PASS') ?: '';
         $this->mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $this->mailer->Port       = (int)(getenv('SMTP_PORT') ?: 587);
+        $this->mailer->Timeout = 10;
 
         // Expéditeur
         $this->mailer->setFrom(getenv('SMTP_FROM') ?: 'no-reply@example.com', 'Vite & Gourmand');
@@ -29,11 +30,15 @@ final class MailService
         $this->mailer->CharSet = PHPMailer::CHARSET_UTF8;
     }
 
-    public function send(string $to, string $subject, string $body): bool
+    public function send(string $to, string $subject, string $body, ?string $replyTo = null): bool
     {
         try {
             $this->mailer->clearAddresses();
+            $this->mailer->clearReplyTos();
             $this->mailer->addAddress($to);
+            if ($replyTo !== null && $replyTo !== '') {
+                $this->mailer->addReplyTo($replyTo);
+            }
             $this->mailer->Subject = $subject;
             $this->mailer->Body    = $body;
 

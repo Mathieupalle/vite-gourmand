@@ -6,6 +6,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../src/helpers.php';
 
 $configLocal = __DIR__ . '/../config.local.php';
 $configProd = __DIR__ . '/../config.php';
