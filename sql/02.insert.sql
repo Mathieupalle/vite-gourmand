@@ -1,3 +1,4 @@
+SET NAMES utf8mb4;
 -- REGIME
 INSERT INTO regime (regime_id, libelle) VALUES
 (4, 'Aucun régime'),

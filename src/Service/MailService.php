@@ -26,6 +26,7 @@ final class MailService
         // Expéditeur
         $this->mailer->setFrom(getenv('SMTP_FROM') ?: 'no-reply@example.com', 'Vite & Gourmand');
         $this->mailer->isHTML(false);
+        $this->mailer->CharSet = PHPMailer::CHARSET_UTF8;
     }
 
     public function send(string $to, string $subject, string $body): bool
