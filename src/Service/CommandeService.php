@@ -183,6 +183,13 @@ final class CommandeService
         return $base !== '' ? $base . '/mesCommandes' : '';
     }
 
+    // Lien direct vers le dépôt d'avis (vide si APP_URL n'est pas défini)
+    private function lienAvis(int $commandeId): string
+    {
+        $base = rtrim((string)(getenv('APP_URL') ?: ''), '/');
+        return $base !== '' ? $base . '/avisCreate?commande_id=' . $commandeId : '';
+    }
+
     private function envoyerConfirmation(int $commandeId, string $numero, string $menuTitre, int $nb, DateTimeImmutable $datePrestation, float $total): void
     {
         $lien = $this->lienMesCommandes();
@@ -222,8 +229,9 @@ final class CommandeService
             . "Le statut de votre commande {$numero} a changé : elle est désormais {$libelle}.\n\n";
 
         if ($statut === CommandeStatus::TERMINEE) {
-            $corps .= "Merci de votre confiance ! Votre avis nous intéresse : vous pouvez le déposer depuis « Mes commandes »"
-                . ($lien !== '' ? " : {$lien}" : ".") . "\n\n";
+            $lienAvis = $this->lienAvis($commandeId);
+            $corps .= "Merci de votre confiance ! Votre avis nous intéresse"
+                . ($lienAvis !== '' ? " : vous pouvez le déposer ici : {$lienAvis}" : " : vous pouvez le déposer depuis « Mes commandes ».") . "\n\n";
         } elseif ($lien !== '') {
             $corps .= "Suivre votre commande : {$lien}\n\n";
         }
