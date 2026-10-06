@@ -142,8 +142,9 @@ Vite & Gourmand";
 
             $menus = $service->getMenusForView();
         } catch (\Throwable $e) {
-            http_response_code(500);
-            exit("Erreur MongoDB : " . htmlspecialchars($e->getMessage()));
+            error_log('Statistiques MongoDB : ' . $e->getMessage());
+            http_response_code(503);
+            exit("Statistiques indisponibles pour le moment.");
         }
 
         View::render('admin/stats', compact('menus'));
