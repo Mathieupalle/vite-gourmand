@@ -32,14 +32,16 @@ final class CommandeService
     public static function calculerPrix(float $prixParPersonne, int $nb, int $min, string $villeLivraison, float $distanceKm): array
     {
         $distanceKm = max(0.0, $distanceKm);
-
+        // Calcul du prix
         $sousTotal = $nb * $prixParPersonne;
 
+        // Remise
         $remise = 0.0;
         if ($nb >= ($min + 5)) {
             $remise = $sousTotal * 0.10;
         }
 
+        // Livraison
         $prixLivraison = 0.0;
         if (mb_strtolower(trim($villeLivraison)) !== 'bordeaux') {
             $prixLivraison = 5 + (0.59 * $distanceKm);

@@ -7,6 +7,7 @@ use MongoDB\Client;
 
 final class MongoDB
 {
+    // Récupérer le client MongoDB
     public static function createFromEnvOrLocalConfig(): Client
     {
         $root = dirname(__DIR__, 2);

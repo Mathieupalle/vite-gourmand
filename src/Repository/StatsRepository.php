@@ -100,6 +100,7 @@ final class StatsRepository
         return $ts * 1000;
     }
 
+    // Construire le format de groupement
     private function buildGroupId(string $group): array
     {
         return match ($group) {
@@ -118,12 +119,14 @@ final class StatsRepository
         string $group,
         int $menuId
     ): array {
+        // Filtre MongoDB
         $match = [
             'dateCommande' => ['$gte' => $startUtc, '$lte' => $endUtc],
             'statut' => ['$ne' => 'annulee'],
         ];
         if ($menuId > 0) $match['menuId'] = $menuId;
 
+        // Pipeline MongoDB
         $pipeline = [
             ['$match' => $match],
             ['$group' => [
