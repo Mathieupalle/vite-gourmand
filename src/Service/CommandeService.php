@@ -29,6 +29,30 @@ final class CommandeService
         private CommandeRepository $repo
     ) {}
 
+    public static function calculerPrix(float $prixParPersonne, int $nb, int $min, string $villeLivraison, float $distanceKm): array
+    {
+        $distanceKm = max(0.0, $distanceKm);
+
+        $sousTotal = $nb * $prixParPersonne;
+
+        $remise = 0.0;
+        if ($nb >= ($min + 5)) {
+            $remise = $sousTotal * 0.10;
+        }
+
+        $prixLivraison = 0.0;
+        if (mb_strtolower(trim($villeLivraison)) !== 'bordeaux') {
+            $prixLivraison = 5 + (0.59 * $distanceKm);
+        }
+
+        return [
+            'sousTotal'     => $sousTotal,
+            'remise'        => $remise,
+            'prixLivraison' => $prixLivraison,
+            'total'         => $sousTotal - $remise + $prixLivraison,
+        ];
+    }
+
     public function creerCommandeDepuisPost(int $utilisateurId, array $post): array
     {
         $menuId = (int)($post['menu_id'] ?? 0);
@@ -75,20 +99,11 @@ final class CommandeService
         $menuTitre = (string)$menu['titre'];
         $prixPers  = (float)$menu['prix_par_personne'];
 
-        // IMPORTANT : prix_menu stocke le TOTAL (nb * prix/pers)
-        $sousTotal = $nb * $prixPers;
-
-        $remise = 0.0;
-        if ($nb >= ($min + 5)) {
-            $remise = $sousTotal * 0.10;
-        }
-
-        $prixLivraison = 0.0;
-        if (mb_strtolower($villeLivraison) !== 'bordeaux') {
-            $prixLivraison = 5 + (0.59 * $distanceKm);
-        }
-
-        $totalFinal = $sousTotal - $remise + $prixLivraison;
+        $prix          = self::calculerPrix($prixPers, $nb, $min, $villeLivraison, $distanceKm);
+        $sousTotal     = $prix['sousTotal'];
+        $remise        = $prix['remise'];
+        $prixLivraison = $prix['prixLivraison'];
+        $totalFinal    = $prix['total'];
 
         $numeroCommande = 'CMD-' . date('Ymd-His') . '-' . random_int(1000, 9999);
 

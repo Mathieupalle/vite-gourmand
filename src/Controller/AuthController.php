@@ -41,6 +41,7 @@ final class AuthController
                     session_start();
                 }
 
+                session_regenerate_id(true);   // nouvel identifiant de session après connexion réussie
                 setSessionUser($sessionUser);
 
                 // Retour à la page demandée avant la connexion (chemin interne uniquement)

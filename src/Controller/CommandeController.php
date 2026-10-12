@@ -337,16 +337,29 @@ class CommandeController
                 throw new \Exception("Nombre de personnes trop faible.");
             }
 
+            // Recalcul du prix côté serveur
+            $prix = CommandeService::calculerPrix(
+                (float)$c['prix_par_personne'],
+                $nombrePersonne,
+                (int)$c['nombre_personne_minimum'],
+                $villeLivraison,
+                $distanceKm
+            );
+
             // Mettre à jour la commande
             $stmt = $pdo->prepare("
             UPDATE commande
             SET date_prestation = ?, adresse_prestation = ?, ville_prestation = ?,
-                date_livraison = ?, heure_livraison = ?, adresse_livraison = ?, ville_livraison = ?, distance_km = ?, nombre_personne = ?
+                date_livraison = ?, heure_livraison = ?, adresse_livraison = ?, ville_livraison = ?,
+                distance_km = ?, nombre_personne = ?,
+                prix_menu = ?, remise = ?, prix_livraison = ?
             WHERE commande_id = ? AND utilisateur_id = ?
         ");
             $stmt->execute([
                 $datePrestation, $adressePrestation, $villePrestation,
-                $dateLivraison, $heureLivraison, $adresseLivraison, $villeLivraison, $distanceKm, $nombrePersonne,
+                $dateLivraison, $heureLivraison, $adresseLivraison, $villeLivraison,
+                max(0.0, $distanceKm), $nombrePersonne,
+                $prix['sousTotal'], $prix['remise'], $prix['prixLivraison'],
                 $c['commande_id'], $userId
             ]);
 
