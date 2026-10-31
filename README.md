@@ -5,6 +5,7 @@ Elle permet à l'entreprise « Vite & Gourmand » de présenter ses menus et de 
 
 - Application en ligne : https://vite-gourmand-mathieu-db469fca4eaf.herokuapp.com/
 - Dépôt GitHub : https://github.com/Mathieupalle/vite-gourmand
+- Gestion de projet (Notion) : https://app.notion.com/p/Gestion-du-projet-Vite-Gourmand-3032bdf5e43b806b9558d06d5793fee0
 
 Comptes de démonstration (détaillés dans le `Manuel d'utilisation.pdf`) :
 
