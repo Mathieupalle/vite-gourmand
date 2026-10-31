@@ -38,6 +38,7 @@
                             <a href="<?= BASE_URL ?>/platEdit?id=<?= (int)($p['plat_id'] ?? 0) ?>" class="btn btn-sm btn-outline-primary">Modifier</a>
 
                             <form method="post" style="display:inline" onsubmit="return confirm('Supprimer ce plat ?');" class="d-inline">
+                                <?= csrf_field() ?>
                                 <input type="hidden" name="delete_id" value="<?= (int)($p['plat_id'] ?? 0) ?>">
                                 <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
                             </form>

@@ -60,3 +60,26 @@ if (!function_exists('base_url')) {
         return rtrim(defined('BASE_URL') ? (string)BASE_URL : '', '/');
     }
 }
+
+// Jeton CSRF : une valeur aléatoire gardée en session pour toute la durée de la connexion
+if (!function_exists('csrf_token')) {
+    function csrf_token(): string
+    {
+        if (empty($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION['csrf_token'];
+    }
+
+    // Champ caché à placer dans chaque formulaire POST
+    function csrf_field(): string
+    {
+        return '<input type="hidden" name="csrf_token" value="' . csrf_token() . '">';
+    }
+
+    // Compare le jeton reçu avec celui de la session (hash_equals évite les attaques par mesure du temps)
+    function csrf_valide(string $jeton): bool
+    {
+        return !empty($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $jeton);
+    }
+}

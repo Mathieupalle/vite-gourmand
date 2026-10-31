@@ -2,6 +2,14 @@
 declare(strict_types=1);
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
+    // Cookie de session : inaccessible au JavaScript (httponly), non envoyé depuis un autre site (samesite)
+    // et transmis uniquement en HTTPS quand le site est en HTTPS (Heroku passe par un proxy)
+    $https = ($_SERVER['HTTPS'] ?? '') === 'on' || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
+    session_set_cookie_params([
+        'httponly' => true,
+        'samesite' => 'Lax',
+        'secure'   => $https,
+    ]);
     session_start();
 }
 
@@ -79,6 +87,12 @@ if ($path === '/' || $path === '') {
 if (!isset($routes[$path])) {
     http_response_code(404);
     die("Page introuvable.");
+}
+
+// Protection CSRF : chaque formulaire POST doit renvoyer le jeton de la session
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !csrf_valide((string)($_POST['csrf_token'] ?? ''))) {
+    http_response_code(403);
+    die("Formulaire expiré ou invalide. Rechargez la page et réessayez.");
 }
 
 // Récupérer le controller et la méthode

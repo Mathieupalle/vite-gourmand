@@ -20,6 +20,7 @@
     <?php endif; ?>
 
     <form method="post">
+        <?= csrf_field() ?>
 
         <table class="table table-bordered text-center">
             <thead>

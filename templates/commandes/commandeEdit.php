@@ -19,6 +19,7 @@
     <?php endif; ?>
 
     <form method="post" class="card shadow-sm">
+        <?= csrf_field() ?>
         <div class="card-body">
 
             <div class="mb-3">
