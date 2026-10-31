@@ -294,12 +294,12 @@
         </mxCell>
         <mxCell id="-Xp-6A0YzoE76duMIfDh-73" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="76" y="1085" as="sourcePoint" />
+            <mxPoint x="160" y="1085" as="sourcePoint" />
             <mxPoint x="340" y="1085" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="-Xp-6A0YzoE76duMIfDh-74" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Confirmer restitution" vertex="1">
-          <mxGeometry height="30" width="120" x="78" y="1060" as="geometry" />
+        <mxCell id="-Xp-6A0YzoE76duMIfDh-74" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="Matériel rendu : terminée" vertex="1">
+          <mxGeometry height="30" width="160" x="163" y="1060" as="geometry" />
         </mxCell>
         <mxCell id="-Xp-6A0YzoE76duMIfDh-75" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;rounded=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;exitX=1;exitY=0.75;exitDx=0;exitDy=0;" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
