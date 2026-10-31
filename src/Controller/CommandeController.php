@@ -23,6 +23,23 @@ class CommandeController
         exit;
     }
 
+    // Met à jour la commande dans MongoDB (statistiques)
+    // Si MongoDB est indisponible, l'erreur est notée dans les logs sans bloquer l'utilisateur
+    private function syncMongo(\PDO $pdo, int $commandeId): void
+    {
+        $mongoUri = getenv('MONGODB_URI');
+        if (!$mongoUri) {
+            return;
+        }
+
+        try {
+            $migrator = new MigrateOrders($pdo, new MongoClient($mongoUri));
+            $migrator->syncCommande($commandeId);
+        } catch (Throwable $e) {
+            error_log("Erreur synchronisation MongoDB : " . $e->getMessage());
+        }
+    }
+
     // Commande
     public function commande(): void
     {
@@ -78,6 +95,7 @@ class CommandeController
         $role = (string)($user['role'] ?? 'employe');
 
         $pdo = Database::getConnection();
+        $repo = new CommandeRepository($pdo);
 
         $allowedStatus = CommandeStatus::all();
         $statusLabels = [
@@ -91,74 +109,24 @@ class CommandeController
             CommandeStatus::ANNULEE                 => 'annulée',
         ];
 
-        $menuStats = $pdo->query("
-          SELECT m.menu_id, m.titre, COUNT(c.commande_id) AS nb
-          FROM menu m
-          LEFT JOIN commande c ON c.menu_id = m.menu_id
-          GROUP BY m.menu_id, m.titre
-          ORDER BY m.titre
-        ")->fetchAll();
-
-        $whereParts = [];
-        $params = [];
-
+        // Un seul filtre à la fois : statut, menu ou client
         $apply = (string)($_GET['apply'] ?? '');
         $statutFiltre = trim((string)($_GET['statut'] ?? ''));
         $menuFiltre   = (int)($_GET['menu_id'] ?? 0);
         $clientFiltre = trim((string)($_GET['client'] ?? ''));
 
-        if ($apply === 'statut') {
-            if ($statutFiltre !== '' && in_array($statutFiltre, $allowedStatus, true)) {
-                $whereParts[] = "c.statut = ?";
-                $params[] = $statutFiltre;
-            }
-            $menuFiltre = 0;
-        }
-
-        if ($apply === 'menu') {
-            if ($menuFiltre > 0) {
-                $whereParts[] = "c.menu_id = ?";
-                $params[] = $menuFiltre;
-            }
+        if ($apply !== 'statut' || !in_array($statutFiltre, $allowedStatus, true)) {
             $statutFiltre = '';
         }
-
-        // Recherche d'un client par son email (ou une partie de l'email)
-        if ($apply === 'client' && $clientFiltre !== '') {
-            $whereParts[] = "u.email LIKE ?";
-            $params[] = '%' . $clientFiltre . '%';
+        if ($apply !== 'menu') {
+            $menuFiltre = 0;
+        }
+        if ($apply !== 'client') {
+            $clientFiltre = '';
         }
 
-        $whereSql = $whereParts ? ('WHERE ' . implode(' AND ', $whereParts)) : '';
-
-        $stmt = $pdo->prepare("
-            SELECT
-                c.commande_id,
-                c.numero_commande,
-                c.date_commande,
-                c.date_prestation,
-                c.date_livraison,
-                c.heure_livraison,
-                c.adresse_livraison,
-                c.ville_livraison,
-                c.nombre_personne,
-                c.prix_menu,
-                c.prix_livraison,
-                c.remise,
-                c.pret_materiel,
-                c.restitution_materiel,
-                c.statut,
-                u.email AS client_email,
-                m.titre AS menu_titre,
-                m.prix_par_personne
-            FROM commande c
-            JOIN utilisateur u ON u.utilisateur_id = c.utilisateur_id
-            JOIN menu m ON m.menu_id = c.menu_id
-            $whereSql
-            ORDER BY c.date_commande DESC
-        ");
-        $stmt->execute($params);
-        $commandes = $stmt->fetchAll();
+        $menuStats = $repo->countCommandesParMenu();
+        $commandes = $repo->findCommandesForManage($statutFiltre, $menuFiltre, $clientFiltre);
 
         View::render('commandes/commandeManage', [
             'role'          => $role,
@@ -172,42 +140,44 @@ class CommandeController
         ]);
     }
 
-    // Annuler une commande
+    // Annuler une commande (formulaire POST depuis "Mes commandes")
     public function commandeAnnuler(): void
     {
         Auth::requireLogin();
         if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            exit("Méthode non autorisée.");
+        }
+
         $userId = (int)($_SESSION['user']['utilisateur_id'] ?? $_SESSION['user']['id'] ?? 0);
         if ($userId <= 0) $this->redirect('/login');
 
-        $commandeId = (int)($_GET['id'] ?? 0);
+        $commandeId = (int)($_POST['commande_id'] ?? 0);
         if ($commandeId <= 0) {
             http_response_code(400);
             exit("Commande invalide.");
         }
 
         $pdo = Database::getConnection();
-        $stmt = $pdo->prepare("SELECT statut FROM commande WHERE commande_id = ? AND utilisateur_id = ? LIMIT 1");
-        $stmt->execute([$commandeId, $userId]);
-        $row = $stmt->fetch();
+        $repo = new CommandeRepository($pdo);
+        $service = new CommandeService($pdo, $repo);
 
-        if (!$row) {
+        $commande = $repo->findCommandeOfUser($commandeId, $userId);
+        if (!$commande) {
             http_response_code(404);
             exit("Commande introuvable.");
         }
 
-        if ((string)$row['statut'] !== CommandeStatus::EN_ATTENTE) {
+        if ((string)$commande['statut'] !== CommandeStatus::EN_ATTENTE) {
             http_response_code(403);
             exit("Annulation impossible : commande déjà traitée.");
         }
 
-        $pdo = Database::getConnection();
-        $repo = new CommandeRepository($pdo);
-        $service = new CommandeService($pdo, $repo);
-
         try {
             $service->changerStatut($commandeId, CommandeStatus::ANNULEE, 'client', null, null);
+            $this->syncMongo($pdo, $commandeId);
             $this->redirect('/mesCommandes');
         } catch (Throwable $e) {
             http_response_code(500);
@@ -277,18 +247,8 @@ class CommandeController
         }
 
         $pdo = Database::getConnection();
-        $stmt = $pdo->prepare("
-            SELECT c.*,
-                   m.prix_par_personne,
-                   m.nombre_personne_minimum,
-                   m.titre AS menu_titre
-            FROM commande c
-            JOIN menu m ON m.menu_id = c.menu_id
-            WHERE c.commande_id = ? AND c.utilisateur_id = ?
-            LIMIT 1
-        ");
-        $stmt->execute([$commandeId, $userId]);
-        $commande = $stmt->fetch();
+        $repo = new CommandeRepository($pdo);
+        $commande = $repo->findCommandeOfUser($commandeId, $userId);
 
         if (!$commande) {
             http_response_code(404);
@@ -303,7 +263,7 @@ class CommandeController
         $errors = [];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->processPost($commande, $userId, $errors, $pdo);
+            $this->processPost($commande, $userId, $errors, $pdo, $repo);
         }
 
         View::render('commandes/commandeEdit', [
@@ -312,7 +272,7 @@ class CommandeController
         ]);
     }
 
-    private function processPost(array &$c, int $userId, array &$errors, \PDO $pdo): void
+    private function processPost(array &$c, int $userId, array &$errors, \PDO $pdo, CommandeRepository $repo): void
     {
         try {
             // Récupérer les données du POST
@@ -348,22 +308,24 @@ class CommandeController
                 $distanceKm
             );
 
-            // Mettre à jour la commande
-            $stmt = $pdo->prepare("
-            UPDATE commande
-            SET date_prestation = ?, adresse_prestation = ?, ville_prestation = ?,
-                date_livraison = ?, heure_livraison = ?, adresse_livraison = ?, ville_livraison = ?,
-                distance_km = ?, nombre_personne = ?,
-                prix_menu = ?, remise = ?, prix_livraison = ?
-            WHERE commande_id = ? AND utilisateur_id = ?
-        ");
-            $stmt->execute([
-                $datePrestation, $adressePrestation, $villePrestation,
-                $dateLivraison, $heureLivraison, $adresseLivraison, $villeLivraison,
-                max(0.0, $distanceKm), $nombrePersonne,
-                $prix['sousTotal'], $prix['remise'], $prix['prixLivraison'],
-                $c['commande_id'], $userId
+            // Mettre à jour la commande (le menu ne peut pas changer)
+            $repo->updateCommandeClient((int)$c['commande_id'], $userId, [
+                'date_prestation'    => $datePrestation,
+                'adresse_prestation' => $adressePrestation,
+                'ville_prestation'   => $villePrestation,
+                'date_livraison'     => $dateLivraison,
+                'heure_livraison'    => $heureLivraison,
+                'adresse_livraison'  => $adresseLivraison,
+                'ville_livraison'    => $villeLivraison,
+                'distance_km'        => max(0.0, $distanceKm),
+                'nombre_personne'    => $nombrePersonne,
+                'prix_menu'          => $prix['sousTotal'],
+                'remise'             => $prix['remise'],
+                'prix_livraison'     => $prix['prixLivraison'],
             ]);
+
+            // Le nouveau total est reporté dans MongoDB
+            $this->syncMongo($pdo, (int)$c['commande_id']);
 
             // Redirection vers mesCommandes après succès
             header('Location: ' . rtrim(BASE_URL, '/') . '/mesCommandes');
@@ -440,22 +402,10 @@ class CommandeController
             exit("Paramètres invalides.");
         }
 
-        // règle métier obligatoire pour les employés
-
-        if ($modeContact === '') {
-            http_response_code(400);
-            exit("Vous devez préciser le mode de contact.");
-        }
-
-        if ($motif === '') {
-            http_response_code(400);
-            exit("Vous devez préciser le motif.");
-        }
-
-        if (!in_array($modeContact, ['telephone', 'mail'], true)) {
-            http_response_code(400);
-            exit("Type de contact invalide.");
-        }
+        // Annulation par un employé : le client doit avoir été contacté (téléphone ou mail)
+        // et un motif est obligatoire. Ces règles sont vérifiées dans CommandeService.
+        $modeContact = $modeContact === '' ? null : $modeContact;
+        $motif = $motif === '' ? null : $motif;
 
         $pdo = Database::getConnection();
         $repo = new CommandeRepository($pdo);
@@ -469,6 +419,8 @@ class CommandeController
                 $modeContact,
                 $motif
             );
+
+            $this->syncMongo($pdo, $commandeId);
 
             header('Location: ' . rtrim(BASE_URL, '/') . '/commandeManage');
             exit;

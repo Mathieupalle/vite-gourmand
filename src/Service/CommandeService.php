@@ -194,6 +194,15 @@ final class CommandeService
                 $this->repo->rendreStock($commandeId);
             }
 
+            // Matériel : prêté au passage en "attente du retour de matériel",
+            // rendu quand la commande passe ensuite en "terminée"
+            if ($newStatut === CommandeStatus::ATTENTE_RETOUR_MATERIEL) {
+                $this->repo->updateMateriel($commandeId, true, false);
+            }
+            if ($newStatut === CommandeStatus::TERMINEE && $current === CommandeStatus::ATTENTE_RETOUR_MATERIEL) {
+                $this->repo->updateMateriel($commandeId, true, true);
+            }
+
             $this->repo->insertSuivi(
                 $commandeId,
                 $newStatut,

@@ -121,6 +121,103 @@ final class CommandeRepository
         $stmt->execute([$statut, $commandeId]);
     }
 
+    // Matériel prêté au client (pret) et matériel rendu (restitution)
+    public function updateMateriel(int $commandeId, bool $pret, bool $restitution): void
+    {
+        $stmt = $this->pdo->prepare("UPDATE commande SET pret_materiel = ?, restitution_materiel = ? WHERE commande_id = ?");
+        $stmt->execute([(int)$pret, (int)$restitution, $commandeId]);
+    }
+
+    // Nombre de commandes par menu (pour le filtre de la gestion des commandes)
+    public function countCommandesParMenu(): array
+    {
+        return $this->pdo->query("
+            SELECT m.menu_id, m.titre, COUNT(c.commande_id) AS nb
+            FROM menu m
+            LEFT JOIN commande c ON c.menu_id = m.menu_id
+            GROUP BY m.menu_id, m.titre
+            ORDER BY m.titre
+        ")->fetchAll();
+    }
+
+    // Toutes les commandes pour l'employé, avec un filtre facultatif
+    // (statut, menu ou partie de l'email du client)
+    public function findCommandesForManage(string $statut, int $menuId, string $client): array
+    {
+        $sql = "
+            SELECT
+                c.commande_id, c.numero_commande, c.date_commande, c.date_prestation,
+                c.date_livraison, c.heure_livraison, c.adresse_livraison, c.ville_livraison,
+                c.nombre_personne, c.prix_menu, c.prix_livraison, c.remise,
+                c.pret_materiel, c.restitution_materiel, c.statut,
+                u.email AS client_email,
+                m.titre AS menu_titre,
+                m.prix_par_personne
+            FROM commande c
+            JOIN utilisateur u ON u.utilisateur_id = c.utilisateur_id
+            JOIN menu m ON m.menu_id = c.menu_id
+            WHERE 1 = 1
+        ";
+        $params = [];
+
+        if ($statut !== '') {
+            $sql .= " AND c.statut = ?";
+            $params[] = $statut;
+        }
+        if ($menuId > 0) {
+            $sql .= " AND c.menu_id = ?";
+            $params[] = $menuId;
+        }
+        if ($client !== '') {
+            $sql .= " AND u.email LIKE ?";
+            $params[] = '%' . $client . '%';
+        }
+
+        $sql .= " ORDER BY c.date_commande DESC";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
+    // Une commande du client connecté, avec les infos du menu
+    // (le filtre sur utilisateur_id empêche d'accéder à la commande d'un autre)
+    public function findCommandeOfUser(int $commandeId, int $userId): ?array
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT c.*,
+                   m.prix_par_personne,
+                   m.nombre_personne_minimum,
+                   m.titre AS menu_titre
+            FROM commande c
+            JOIN menu m ON m.menu_id = c.menu_id
+            WHERE c.commande_id = ? AND c.utilisateur_id = ?
+            LIMIT 1
+        ");
+        $stmt->execute([$commandeId, $userId]);
+        return $stmt->fetch() ?: null;
+    }
+
+    // Modification d'une commande par son client (le menu ne change pas)
+    public function updateCommandeClient(int $commandeId, int $userId, array $data): void
+    {
+        $stmt = $this->pdo->prepare("
+            UPDATE commande
+            SET date_prestation = ?, adresse_prestation = ?, ville_prestation = ?,
+                date_livraison = ?, heure_livraison = ?, adresse_livraison = ?, ville_livraison = ?,
+                distance_km = ?, nombre_personne = ?,
+                prix_menu = ?, remise = ?, prix_livraison = ?
+            WHERE commande_id = ? AND utilisateur_id = ?
+        ");
+        $stmt->execute([
+            $data['date_prestation'], $data['adresse_prestation'], $data['ville_prestation'],
+            $data['date_livraison'], $data['heure_livraison'], $data['adresse_livraison'], $data['ville_livraison'],
+            $data['distance_km'], $data['nombre_personne'],
+            $data['prix_menu'], $data['remise'], $data['prix_livraison'],
+            $commandeId, $userId,
+        ]);
+    }
+
     public function insertSuivi(int $commandeId, string $statut, ?string $modeContact, ?string $motif): void
     {
         $stmt = $this->pdo->prepare("
