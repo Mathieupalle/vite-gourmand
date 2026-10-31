@@ -22,7 +22,8 @@ if (!defined('DB_HOST')) define('DB_HOST', $isDocker ? 'db' : '127.0.0.1');
 if (!defined('DB_PORT')) define('DB_PORT', 3306);
 if (!defined('DB_NAME')) define('DB_NAME', 'vite_gourmand');
 if (!defined('DB_USER')) define('DB_USER', 'siteweb');
-if (!defined('DB_PASS')) define('DB_PASS', 'motdepasse');
+// Docker fournit DB_PASS (docker-compose.yml) ; avec XAMPP, mettre ici le mot de passe de l'utilisateur siteweb
+if (!defined('DB_PASS')) define('DB_PASS', getenv('DB_PASS') ?: 'motdepasse');
 
 // Projet
 if (!defined('BASE_URL')) define('BASE_URL', $isDocker ? '' : '/vite-gourmand/public');

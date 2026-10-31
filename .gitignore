@@ -16,3 +16,7 @@ docker-compose.override.yml
 
 # Binaires
 *.deb
+
+# Tests
+.phpunit.result.cache
+.phpunit.cache/

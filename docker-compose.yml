@@ -10,6 +10,7 @@ services:
       - "8080:80"
     environment:
       DOCKER: "1"
+      DB_PASS: "motdepasse"
       APP_ENV: "dev"
       APP_URL: "http://localhost:8080"
       SMTP_HOST: ${SMTP_HOST:-}
