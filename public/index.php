@@ -65,6 +65,7 @@ $routes = [
     '/cgv' => ['App\Controller\CgvController', 'cgv'],
     '/mentionsLegales' => ['App\Controller\MentionsLegalesController', 'mentionsLegales'],
     '/horaireManage' => ['App\Controller\HoraireManageController', 'horaireManage'],
+    '/referentielManage' => ['App\Controller\ReferentielController', 'referentielManage'],
 
     '/avisCreate' => ['App\Controller\AvisController', 'avisCreate'],
     '/avisManage' => ['App\Controller\AvisController', 'avisManage'],
