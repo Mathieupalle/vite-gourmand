@@ -27,6 +27,7 @@
     ?>
 
     <form method="post" class="p-3 border rounded bg-white">
+        <?= csrf_field() ?>
 
         <div class="mb-3">
             <label for="titre" class="form-label">Titre</label>

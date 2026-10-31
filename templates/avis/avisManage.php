@@ -64,6 +64,7 @@
 
                                 <td>
                                     <form method="post" class="d-flex gap-2 align-items-center">
+                                        <?= csrf_field() ?>
 
                                         <input type="hidden"
                                                name="avis_id"

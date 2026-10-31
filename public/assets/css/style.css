@@ -2,6 +2,13 @@
     --brand:#8b5e34;
     --brand-2:#f7efe6;
     --brand-3:#553820;
+
+    /* Couleur "primary" de Bootstrap (liens, text-primary) alignée sur la charte */
+    --bs-primary-rgb:139,94,52;
+    --bs-link-color:#8b5e34;
+    --bs-link-color-rgb:139,94,52;
+    --bs-link-hover-color:#553820;
+    --bs-link-hover-color-rgb:85,56,32;
 }
 
 .brand-dot{

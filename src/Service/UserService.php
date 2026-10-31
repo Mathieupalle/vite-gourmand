@@ -107,8 +107,9 @@ final class UserService
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new Exception("Email invalide.");
         }
-        if (strlen($password) < 6) {
-            throw new Exception("Mot de passe trop court.");
+        // Même règle que pour les utilisateurs
+        if (!$this->isStrongPassword($password)) {
+            throw new Exception("Mot de passe trop faible : 10 caractères minimum avec majuscule, minuscule, chiffre et caractère spécial.");
         }
         if ($this->repo->existsByEmail($email)) {
             throw new Exception("Email déjà utilisé.");

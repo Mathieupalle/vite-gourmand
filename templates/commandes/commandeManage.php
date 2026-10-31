@@ -127,6 +127,7 @@ $clientFiltre = $clientFiltre ?? '';
                         <td>
                             <?php if (!$locked): ?>
                                 <form method="post" action="<?= BASE_URL ?>/commandeUpdateStatut" class="mb-2">
+                                    <?= csrf_field() ?>
                                     <input type="hidden" name="commande_id" value="<?= (int)($c['commande_id'] ?? 0) ?>">
                                     <select name="statut" class="form-select form-select-sm mb-1" required>
                                         <?php foreach ($allowedStatus as $s): ?>
@@ -136,14 +137,14 @@ $clientFiltre = $clientFiltre ?? '';
                                         <?php endforeach; ?>
                                     </select>
 
-                                    <label class="form-label small mb-0">Contact :</label>
+                                    <label class="form-label small mb-0">Contact du client (obligatoire pour annuler) :</label>
                                     <select name="mode_contact" class="form-select form-select-sm mb-1">
                                         <option value="">--</option>
                                         <option value="telephone">Téléphone</option>
                                         <option value="mail">Mail</option>
                                     </select>
 
-                                    <label class="form-label small mb-0">Motif :</label>
+                                    <label class="form-label small mb-0">Motif (obligatoire pour annuler) :</label>
                                     <textarea name="motif" rows="2" class="form-control form-control-sm mb-1"></textarea>
 
                                     <button type="submit" class="btn btn-sm btn-primary w-100">Mettre à jour</button>

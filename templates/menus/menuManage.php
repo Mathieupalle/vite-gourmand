@@ -59,6 +59,7 @@
                             <a href="<?= BASE_URL ?>/menu?id=<?= (int)($m['menu_id'] ?? 0) ?>" class="btn btn-sm btn-outline-primary">Voir</a>
                             <a href="<?= BASE_URL ?>/menuEdit?id=<?= (int)($m['menu_id'] ?? 0) ?>" class="btn btn-sm btn-outline-secondary">Modifier</a>
                             <form method="post" class="d-inline" onsubmit="return confirm('Supprimer ce menu ?');">
+                                <?= csrf_field() ?>
                                 <input type="hidden" name="delete_id" value="<?= (int)($m['menu_id'] ?? 0) ?>">
                                 <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
                             </form>

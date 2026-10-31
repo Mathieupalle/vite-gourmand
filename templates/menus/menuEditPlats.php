@@ -45,6 +45,7 @@ $menuId = $menuId ?? 0;
 
     <?php if ($menuId > 0): ?>
         <form method="post">
+            <?= csrf_field() ?>
             <input type="hidden" name="menu_id" value="<?= (int)$menuId ?>">
 
             <p class="mb-2">Sélectionne les plats à associer :</p>

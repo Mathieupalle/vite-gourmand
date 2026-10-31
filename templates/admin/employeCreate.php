@@ -25,6 +25,7 @@
     <?php endif; ?>
 
     <form method="post" class="mt-3">
+        <?= csrf_field() ?>
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>
             <input
@@ -47,6 +48,7 @@
                     placeholder="Mot de passe"
                     required
             >
+            <div class="form-text">10 caractères minimum : 1 majuscule, 1 minuscule, 1 chiffre, 1 caractère spécial.</div>
         </div>
 
         <button type="submit" class="btn btn-primary">Créer</button>

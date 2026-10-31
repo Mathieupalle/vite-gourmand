@@ -34,6 +34,7 @@
                         <td>
                             <?php if ((int)$e['actif'] === 1): ?>
                                 <form method="post" class="d-inline">
+                                    <?= csrf_field() ?>
                                     <input type="hidden" name="utilisateur_id" value="<?= (int)$e['utilisateur_id'] ?>">
                                     <button type="submit" class="btn btn-sm btn-danger">Désactiver</button>
                                 </form>
