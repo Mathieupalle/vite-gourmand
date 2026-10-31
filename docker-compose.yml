@@ -32,7 +32,7 @@ services:
       MYSQL_ROOT_PASSWORD: "rootpassword"
       MYSQL_DATABASE: "vite_gourmand"
       MYSQL_USER: "siteweb"
-      MYSQL_PASSWORD: "!Cm51]IOX1HfAiix"
+      MYSQL_PASSWORD: "motdepasse"
     ports:
       - "3307:3306"
     volumes:
