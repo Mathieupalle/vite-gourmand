@@ -47,6 +47,7 @@ docker compose exec app composer install
 
 Après environ 30 secondes (initialisation de la base avec les fichiers du dossier `sql/`), ouvrir `http://localhost:8080`.
 Pour réinitialiser la base : `docker compose down -v`.
+
 ## Historique Git
 
 La version évaluée à l'ECF (février 2026) était incomplète. À partir de la correction du formateur,
