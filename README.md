@@ -52,3 +52,7 @@ Pour réinitialiser la base : `docker compose down -v`.
 
 La version évaluée à l'ECF (février 2026) était incomplète. À partir de la correction du formateur,
 j'ai repris le projet en grande partie, recréé ce dépôt et versionné la nouvelle version par fonctionnalité.
+
+## Tests
+
+`vendor/bin/phpunit` (ou `docker compose exec app vendor/bin/phpunit` avec Docker)
