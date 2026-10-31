@@ -67,11 +67,12 @@
                                 Modifier
                             </a>
 
-                            <a href="<?= BASE_URL ?>/commandeAnnuler?id=<?= $commandeId ?>"
-                               class="btn btn-sm btn-outline-danger"
-                               onclick="return confirm('Annuler cette commande ?');">
-                                Annuler
-                            </a>
+                            <form method="post" action="<?= BASE_URL ?>/commandeAnnuler" class="d-inline"
+                                  onsubmit="return confirm('Annuler cette commande ?');">
+                                <?= csrf_field() ?>
+                                <input type="hidden" name="commande_id" value="<?= $commandeId ?>">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Annuler</button>
+                            </form>
                         </div>
                     <?php endif; ?>
 

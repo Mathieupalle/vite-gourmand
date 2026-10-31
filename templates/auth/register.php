@@ -25,6 +25,7 @@
     <?php endif; ?>
 
     <form method="post">
+        <?= csrf_field() ?>
 
         <div class="mb-3">
             <label for="nom" class="form-label">Nom</label>

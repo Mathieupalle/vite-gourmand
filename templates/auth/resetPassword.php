@@ -29,6 +29,7 @@
         <?php endif; ?>
 
         <form method="post">
+            <?= csrf_field() ?>
 
             <div class="mb-3">
                 <label for="password" class="form-label">Nouveau mot de passe</label>

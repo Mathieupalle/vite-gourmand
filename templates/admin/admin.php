@@ -31,6 +31,7 @@ $role = $role ?? '';
             <ul class="mb-0">
                 <li><a href="<?= BASE_URL ?>/menuManage">Gestion des menus</a></li>
                 <li><a href="<?= BASE_URL ?>/platManage">Gestion des plats</a></li>
+                <li><a href="<?= BASE_URL ?>/referentielManage">Gestion des thèmes et allergènes</a></li>
                 <li><a href="<?= BASE_URL ?>/commandeManage">Gestion des commandes</a></li>
                 <li><a href="<?= BASE_URL ?>/horaireManage">Gestion des horaires</a></li>
                 <li><a href="<?= BASE_URL ?>/avisManage">Gestion des avis</a></li>

@@ -28,8 +28,8 @@ $mongo = new Client($config['MONGODB_URI']);
 // Instanciation du migrateur
 $migrator = new MigrateOrders($pdo, $mongo);
 
-// Lancer la migration
-$nbMigrated = $migrator->migrateNewOrders();
+// Recopier toutes les commandes (création ou mise à jour dans MongoDB)
+$nbCommandes = $migrator->syncToutes();
 
 // Afficher le résultat
-echo "Nombre de commandes migrées : $nbMigrated\n";
+echo "Nombre de commandes synchronisées : $nbCommandes\n";

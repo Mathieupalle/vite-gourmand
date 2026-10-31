@@ -25,6 +25,7 @@ $selected = $selected ?? [];
     <?php endif; ?>
 
     <form method="post" class="mb-4">
+        <?= csrf_field() ?>
 
         <div class="mb-3">
             <label for="titre_plat" class="form-label">Titre</label>

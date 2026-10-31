@@ -33,6 +33,7 @@ $client = $client ?? [];
     </div>
 
     <form method="post" action="<?= BASE_URL ?>/commandeCreate" id="commandeForm">
+        <?= csrf_field() ?>
 
         <input type="hidden" name="menu_id" value="<?= (int)($menu['menu_id'] ?? 0) ?>">
 
