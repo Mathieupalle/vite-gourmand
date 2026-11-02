@@ -65,6 +65,18 @@ INSERT INTO menu (menu_id, titre, nombre_personne_minimum, prix_par_personne, de
 (8, 'Menu soirée privée', 10, 25, 'Menu 100% vegan pour évènements privés.', 'À commander au moins 5 jours avant la prestation. Menu 100 % végétal, à conserver au frais.', 10, 6, 10),
 (9, 'Menu EVJF / EVG Festif', 10, 30, 'Menu festif idéal pour une soirée entre amis.', 'À commander au moins 5 jours avant la prestation. Plats à conserver au frais et à consommer le jour même.', 11, 4, 7);
 
+-- MENU_IMAGE (galerie d'images des menus)
+INSERT INTO menu_image (menu_id, chemin) VALUES
+(1, 'assets/img/menus/mariage.jpg'),
+(2, 'assets/img/menus/cocktail.jpg'),
+(3, 'assets/img/menus/seminaire.jpg'),
+(4, 'assets/img/menus/brunch.jpg'),
+(5, 'assets/img/menus/gala.jpg'),
+(6, 'assets/img/menus/bapteme.jpg'),
+(7, 'assets/img/menus/anniversaire.jpg'),
+(8, 'assets/img/menus/soiree.jpg'),
+(9, 'assets/img/menus/evjf.jpg');
+
 -- PLAT
 INSERT INTO plat (plat_id, titre_plat, photo, categorie) VALUES
 (2, 'Verrine saumon avocat', NULL, 'entree'),
